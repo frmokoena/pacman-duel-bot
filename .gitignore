@@ -172,3 +172,8 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+game.state
+pacmanduelbot/store/POISON_PILL.txt
+compile.bat
+start.bat
+botlogs_capture.txt
