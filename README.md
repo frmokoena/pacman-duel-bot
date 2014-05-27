@@ -1,2 +1,1 @@
-r2k14pacmanduelbot
-==================
+pacman duel bot
