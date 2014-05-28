@@ -152,7 +152,7 @@ namespace pacmanduelbot.helpers
 
 
             var _sScore = 0;
-            var _iIsLeaf = false;
+            //var _iIsLeaf = false;
 
             var _node = new pacmanduelbot.models.LinkedList.Node { _position = _current_position, _score = _sScore, _parent = null };
 
@@ -170,57 +170,24 @@ namespace pacmanduelbot.helpers
                         && _maze[_tempI[i].X][_tempI[i].Y] == Guide._PILL)
                     {
                         var _parent = _open.First;
-                        _iIsLeaf = true;
-                        var _tempJ = GenerateNextPossiblePositions(_maze, _tempI[i]);
-                        //check if we reached the end of the path
-                        for(var j = 0;j < _tempJ.Count; j++)
-                        {
-                            _test_node = new pacmanduelbot.models.LinkedList.Node { _position = _tempJ[j] };
-                            if (!_closed.contains(_test_node)
-                                && (_maze[_tempJ[j].X][_tempJ[j].Y] == Guide._BONUS_PILL
-                                || _maze[_tempJ[j].X][_tempJ[j].Y] == Guide._PILL))
-                            {
-                                _iIsLeaf = false; 
-                            }
-                        }
-                        _sScore = _open.First._score + 1;
-                        var _path_node = new pacmanduelbot.models.LinkedList.Node { _position = _tempI[i], _score = _sScore, _parent = _parent, isLeaf = _iIsLeaf };
-                        if (_iIsLeaf)
-                            _leaf_nodes.Insert(_path_node);
-                        else
-                            if (!_closed.contains(_path_node))
-                                _open.Insert(_path_node);                        
+                        _sScore = _parent._score + 1;
+                        var _path_node = new LinkedList.Node { _position = _tempI[i], _score = _sScore, _parent = _parent };
+                        
+                        _open.Insert(_path_node);                        
                     }
                 }
                 _open.Delete(_open.First);
             }
 
-            var curr = _leaf_nodes.First;
+            var curr = _closed.Last;
 
-            //hold leaf for long path
-            var tempf = curr._score;
-            var temp_node = curr;
-
+            
+            //traverse back
             if (curr == null)
                 return _next;
-            while(curr._next != null)
-            {
-                if (curr._next._score < tempf)
-                {
-                    tempf = curr._next._score;
-                    temp_node = curr._next;
-                }
-                curr = curr._next;
-            }
-
-            //traverse back to next
-            var temp = new LinkedList();
-            while (temp_node._parent != null)
-            {
-                temp.Insert(temp_node);
-                temp_node = temp_node._parent;
-            }
-            _next = temp.Last._position;
+            while (curr._parent != _closed.First)
+                curr = curr._parent;
+            _next = curr._position;            
 
             return _next;
         }
