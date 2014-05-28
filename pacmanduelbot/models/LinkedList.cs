@@ -12,10 +12,7 @@ namespace pacmanduelbot.models
             public int _g { get; set; }
             public int _h { get; set; }
             public int _f { get; set; }
-
-            //choose path
-            public int _score { get; set; }
-            public bool isLeaf = false; 
+               
             public Node _parent { get; set; }
             public Node _next = null;
         }

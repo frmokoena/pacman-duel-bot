@@ -35,16 +35,13 @@ namespace pacmanduelbot.UnitTests.helpers
             string _filepath1 = @"..\..\..\game.state";
             var _maze = Maze.Read(_filepath1);
 
-            var result = MovesGenerator.ChoosePath(_maze, new Point { X = 1, Y = 8 });
+            var result = MovesGenerator.ChoosePath(_maze, new Point { X = 1, Y = 8 },4);
 
             var _test = false;
             if (result.X == 19 && result.Y == 10)
                 _test = true;
 
             Assert.True(_test);
-
-
-
         }
 
     }

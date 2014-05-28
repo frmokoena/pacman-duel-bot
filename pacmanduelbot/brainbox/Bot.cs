@@ -44,21 +44,16 @@ namespace pacmanduelbot.brainbox
         {
             if (!_CURRENT_POSITION.IsEmpty)
             {
-                var _move = NextMove();
-
-                var random = new Random();
-                var randomMoveIndex = random.Next(0, _move.Count);
-                var movePoint = _move[randomMoveIndex];
-
+                var _next_position = NextMove();
+                
                 if (needSelfRespawn())
-                    return SelfRespawn(movePoint);
+                    return SelfRespawn(_next_position);
 
                 if (_DROP_PILL)
-                    return MakeMoveAndDropPill(movePoint);
+                    return MakeMoveAndDropPill(_next_position);
 
                 _maze[_CURRENT_POSITION.X][_CURRENT_POSITION.Y] = ' ';
-                _maze[movePoint.X][movePoint.Y] = Guide._PLAYER_SYMBOL;
-                //_maze[_next.X][_next.Y] = Guide._PLAYER_SYMBOL;
+                _maze[_next_position.X][_next_position.Y] = Guide._PLAYER_SYMBOL;
             }
 
             return _maze;
@@ -103,19 +98,21 @@ namespace pacmanduelbot.brainbox
             }
         }
 
-
-
-
-
         public bool needSelfRespawn()
         {
             var result = PoisonInventory.isSelfRespawn();
             return result;
         }
 
-        public List<Point> NextMove()
+        public Point NextMove()
         {
+            var _move = new Point();
             var list = new List<Point>();
+
+            var _next = FindNearbyPill();
+            if (_maze[_next.X][_next.Y].Equals(Guide._BONUS_PILL))
+                return MovesGenerator.BuildPath(_maze, _CURRENT_POSITION, _next);
+
             var possibleMoveList = MovesGenerator.GenerateNextPossiblePositions(_maze, _CURRENT_POSITION);
 
             for (var i = 0; i < possibleMoveList.Count; i++)
@@ -126,22 +123,30 @@ namespace pacmanduelbot.brainbox
                     list.Add(new Point { X = possibleMoveList[i].X, Y = possibleMoveList[i].Y });
 
             }
-            if (list.Count == 0)
+
+            switch(list.Count)
             {
-                var _goal = FindNearbyPill();
+                case 0:
+                    var _goal = FindNearbyPill();
 
-                if (!PoisonInventory.arePoisonPillsExhausted())
-                {
-                    var _mapping = Mappings.ManhattanDistance(_CURRENT_POSITION, _goal);
-                    if (_mapping > 10)
-                        _DROP_PILL = true;
-                }
+                    if (!PoisonInventory.arePoisonPillsExhausted()
+                        && !(_CURRENT_POSITION.X == Guide._RESPAWN_X && _CURRENT_POSITION.Y==Guide._RESPAWN_Y))
+                    {
+                        var _mapping = Mappings.ManhattanDistance(_CURRENT_POSITION, _goal);
+                        if (_mapping > 10)
+                            _DROP_PILL = true;
+                    }
 
-                var _next = MovesGenerator.BuildPath(_maze, _CURRENT_POSITION, _goal);
-                list.Add(new Point { X = _next.X, Y = _next.Y });
+                    _move = MovesGenerator.BuildPath(_maze, _CURRENT_POSITION, _goal);
+                    break;
+                case 1:
+                    _move = list[0];
+                    break;
+                default:
+                    _move = MovesGenerator.ChoosePath(_maze, _CURRENT_POSITION,10);
+                    break;
             }
-
-            return list;
+            return _move;
         }
 
         public Point FindNearbyPill()
@@ -160,9 +165,8 @@ namespace pacmanduelbot.brainbox
                     {
                         _next = new Point { X = x, Y = y };
                         var tempH = Mappings.ManhattanDistance(_CURRENT_POSITION, _next);
-                        if (tempH < 6)
+                        if (tempH < 8)
                             return _next;
-
                     }
                 }
             }
@@ -190,10 +194,19 @@ namespace pacmanduelbot.brainbox
             return _next;
         }
 
-        private bool isRespawn()
+        public int PillCount()
         {
-            var result = false;
-            return result;
+            var _pill_count = 0;
+            for (var x = 0; x < Guide._HEIGHT; x++)
+            {
+                for (var y = 0; y < Guide._WIDTH; y++)
+                {
+                    if (_maze[x][y].Equals(Guide._PILL)
+                        || _maze[x][y].Equals(Guide._BONUS_PILL))
+                        _pill_count++;
+                }
+            }
+            return _pill_count;
         }
     }
 }

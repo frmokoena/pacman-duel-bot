@@ -143,40 +143,45 @@ namespace pacmanduelbot.helpers
             return _result;
         }
 
-        public static Point ChoosePath(char[][] _maze, Point _current_position)
+        public static Point ChoosePath(char[][] _maze, Point _current_position, int _depth)
         {
             var _next = new Point();
             var _open = new LinkedList();
             var _closed = new LinkedList();
             var _leaf_nodes = new LinkedList();
 
-
-            var _sScore = 0;
-            //var _iIsLeaf = false;
-
-            var _node = new pacmanduelbot.models.LinkedList.Node { _position = _current_position, _score = _sScore, _parent = null };
+            var _node = new pacmanduelbot.models.LinkedList.Node { _position = _current_position, _parent = null };
 
             _open.Insert(_node);
+            var _count = 0;
                         
-            while(!_open.isEmpty())
+            while(!_open.isEmpty() && _count < _depth )
             {
-                var _tempI = GenerateNextPossiblePositions(_maze, _open.First._position);
                 _closed.Insert(_open.First);
+                var _tempI = GenerateNextPossiblePositions(_maze, _open.First._position);
 
                 for(var i=0;i<_tempI.Count;i++)
                 {
-                    var _test_node = new pacmanduelbot.models.LinkedList.Node { _position = _tempI[i] };
-                    if(!_closed.contains(_test_node)
-                        && _maze[_tempI[i].X][_tempI[i].Y] == Guide._PILL)
+                    if(_open.First._parent != null)
                     {
-                        var _parent = _open.First;
-                        _sScore = _parent._score + 1;
-                        var _path_node = new LinkedList.Node { _position = _tempI[i], _score = _sScore, _parent = _parent };
-                        
-                        _open.Insert(_path_node);                        
+                        if (!(_tempI[i].X == _open.First._parent._position.X && _tempI[i].Y == _open.First._parent._position.Y)
+                            && (_maze[_tempI[i].X][_tempI[i].Y].Equals(Guide._PILL) || _maze[_tempI[i].X][_tempI[i].Y].Equals(Guide._PILL)))
+                        {
+                            var _path_node = new LinkedList.Node { _position = _tempI[i], _parent = _open.First };
+                            _open.Insert(_path_node);
+                        }
+                    }
+                    else
+                    {
+                        if ((_maze[_tempI[i].X][_tempI[i].Y].Equals(Guide._PILL) || _maze[_tempI[i].X][_tempI[i].Y].Equals(Guide._PILL)))
+                        {
+                            var _path_node = new LinkedList.Node { _position = _tempI[i], _parent = _open.First };
+                            _open.Insert(_path_node); 
+                        }
                     }
                 }
                 _open.Delete(_open.First);
+                _count++;
             }
 
             var curr = _closed.Last;
