@@ -1,1 +1,1 @@
-pacman duel bot
+entry into pacman duel bot challenge
