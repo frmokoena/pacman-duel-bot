@@ -6,11 +6,11 @@ namespace pacmanduelbot.models
     public class PoisonInventory
     {
         public static readonly string _poisonfilepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
-            + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-            + "POISON_PILL.txt";
+          + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
+          + "poison_pill.csv";
         //public static readonly string _poisonfilepath = ".." + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar
-        //  + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-        // + "POISON_PILL.txt";
+          //+ ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
+          //+ "POISON_PILL.csv";
         public static bool arePoisonPillsExhausted()
         {
             int _NUMBER_OF_POISON_PILLS;
