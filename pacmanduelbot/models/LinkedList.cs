@@ -7,14 +7,20 @@ namespace pacmanduelbot.models
         public class Node
         {
             public Point _position { get; set; }
+
+            //build path
             public int _g { get; set; }
             public int _h { get; set; }
             public int _f { get; set; }
+
+            //choose path
+            public int _score { get; set; }
+            public bool isLeaf = false; 
             public Node _parent { get; set; }
             public Node _next = null;
         }
 
-        private Node _head = null;
+        public Node _head = null;
 
         public bool isEmpty()
         {
@@ -36,9 +42,9 @@ namespace pacmanduelbot.models
             }
         }
 
-        public void Append(Point position, int g, int h, int f, Node parent)
+        public void Append(Point position, int g, int h, int f, Node _parent)
         {
-            Node _node = new Node { _position = position, _g = g, _h = h, _f = f, _parent = parent };
+            Node _node = new Node { _position = position, _g = g, _h = h, _f = f, _parent = _parent };
             if (!isEmpty())
                 Last._next = _node;
             else
