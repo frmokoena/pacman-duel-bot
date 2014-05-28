@@ -1,7 +1,6 @@
 ﻿using pacmanduelbot.helpers;
 using pacmanduelbot.models;
 using pacmanduelbot.shared;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 
