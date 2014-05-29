@@ -78,6 +78,7 @@ namespace pacmanduelbot.brainbox
                 {
                     _next.X = list[i].X;
                     _next.Y = list[i].Y;
+                    break;
                 }
             }
 
@@ -88,13 +89,11 @@ namespace pacmanduelbot.brainbox
                 PoisonInventory.EmptyPoisonInventory();
                 return _maze;
             }
-            else
-            {
-                _maze[_CURRENT_POSITION.X][_CURRENT_POSITION.Y] = ' ';
-                _maze[_move.X][_move.Y] = Guide._PLAYER_SYMBOL;
-                PoisonInventory.EmptyPoisonInventory();
-                return _maze;
-            }
+
+            _maze[_CURRENT_POSITION.X][_CURRENT_POSITION.Y] = ' ';
+            _maze[_move.X][_move.Y] = Guide._PLAYER_SYMBOL;
+            PoisonInventory.EmptyPoisonInventory();
+            return _maze;
         }
 
         public bool needSelfRespawn()
