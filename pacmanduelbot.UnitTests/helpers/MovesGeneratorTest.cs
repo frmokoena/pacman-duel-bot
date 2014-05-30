@@ -18,7 +18,7 @@ namespace pacmanduelbot.UnitTests.helpers
 
             var _currentP = _Bot._CURRENT_POSITION;
 
-            var result = MovesGenerator.GenerateNextPossiblePositions(_maze, _currentP);
+            var result = Moves.NextPossiblePositions(_maze, _currentP);
 
             var _test = false;
             if (result.Count == 2
@@ -35,7 +35,7 @@ namespace pacmanduelbot.UnitTests.helpers
             string _filepath1 = @"..\..\..\game.state";
             var _maze = Maze.Read(_filepath1);
 
-            var result = MovesGenerator.ChoosePath(_maze, new Point { X = 1, Y = 8 },4);
+            var result = Moves.ChoosePath(_maze, new Point { X = 1, Y = 8 },4);
 
             var _test = false;
             if (result.X == 19 && result.Y == 10)

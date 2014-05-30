@@ -70,7 +70,7 @@ namespace pacmanduelbot.brainbox
         public char[][] SelfRespawn(Point _move)
         {
             var _next = new Point();
-            var list = MovesGenerator.GenerateNextPossiblePositions(_maze, _CURRENT_POSITION);
+            var list = Moves.NextPossiblePositions(_maze, _CURRENT_POSITION);
             for (var i = 0; i < list.Count; i++)
             {
                 var _Maze_symbol = _maze[list[i].X][list[i].Y];
@@ -109,9 +109,9 @@ namespace pacmanduelbot.brainbox
 
             var _next = FindNearbyPill();
             if (_maze[_next.X][_next.Y].Equals(Guide._BONUS_PILL))
-                return MovesGenerator.BuildPath(_maze, _CURRENT_POSITION, _next);
+                return Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
 
-            var possibleMoveList = MovesGenerator.GenerateNextPossiblePositions(_maze, _CURRENT_POSITION);
+            var possibleMoveList = Moves.NextPossiblePositions(_maze, _CURRENT_POSITION);
 
             for (var i = 0; i < possibleMoveList.Count; i++)
             {
@@ -135,13 +135,13 @@ namespace pacmanduelbot.brainbox
                             _DROP_PILL = true;
                     }
 
-                    _move = MovesGenerator.BuildPath(_maze, _CURRENT_POSITION, _goal);
+                    _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _goal);
                     break;
                 case 1:
                     _move = list[0];
                     break;
                 default:
-                    _move = MovesGenerator.ChoosePath(_maze, _CURRENT_POSITION,10);
+                    _move = Moves.ChoosePath(_maze, _CURRENT_POSITION,30);
                     break;
             }
             return _move;
@@ -172,7 +172,7 @@ namespace pacmanduelbot.brainbox
 
             while (_open.Count != 0)
             {
-                var _templist = MovesGenerator.GenerateNextPossiblePositions(_maze, _open[0]);
+                var _templist = Moves.NextPossiblePositions(_maze, _open[0]);
                 _closed.Add(_open[0]);
                 for (var j = 0; j < _templist.Count; j++)
                 {
