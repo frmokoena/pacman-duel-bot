@@ -29,7 +29,7 @@ namespace pacmanduelbot.models
 
         //Maze symbols
         public const char _PLAYER_SYMBOL = 'A';
-        public const char _OPONENT_SYMBOL = 'B';
+        public const char _OPPONENT_SYMBOL = 'B';
         public const char _PILL = '.';
         public const char _BONUS_PILL = '*';
         public const char _POISON_PILL = '!';
