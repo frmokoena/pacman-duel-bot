@@ -44,9 +44,10 @@
   <ItemGroup>
     <Compile Include="brainbox\Bot.cs" />
     <Compile Include="helpers\Moves.cs" />
+    <Compile Include="models\BuildPathNode.cs" />
+    <Compile Include="models\ChoosePathNode.cs" />
     <Compile Include="models\Guide.cs" />
     <Compile Include="models\Maze.cs" />
-    <Compile Include="models\PathNode.cs" />
     <Compile Include="models\PoisonInventory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
