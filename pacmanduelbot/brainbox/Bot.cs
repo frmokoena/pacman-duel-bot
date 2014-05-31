@@ -125,14 +125,13 @@ namespace pacmanduelbot.brainbox
             {
                 case 0:
                     //var _goal = FindNearbyPill();
-                    /*
                     if (!PoisonInventory.arePoisonPillsExhausted()
                         && !(_CURRENT_POSITION.X == Guide._RESPAWN_X && _CURRENT_POSITION.Y==Guide._RESPAWN_Y))
                     {
-                        var _mapping = Mappings.ManhattanDistance(_CURRENT_POSITION, _goal);
+                        var _mapping = Mappings.ManhattanDistance(_CURRENT_POSITION, _next);
                         if (_mapping > 10)
                             _DROP_PILL = true;
-                    }*/
+                    }
 
                     _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
                     break;
@@ -192,17 +191,17 @@ namespace pacmanduelbot.brainbox
 
         public int PillCount()
         {
-            var _pill_count = 0;
+            var _PILL_COUNT = 0;
             for (var x = 0; x < Guide._HEIGHT; x++)
             {
                 for (var y = 0; y < Guide._WIDTH; y++)
                 {
                     if (_maze[x][y].Equals(Guide._PILL)
                         || _maze[x][y].Equals(Guide._BONUS_PILL))
-                        _pill_count++;
+                        _PILL_COUNT++;
                 }
             }
-            return _pill_count;
+            return _PILL_COUNT;
         }
     }
 }
