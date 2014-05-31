@@ -30,7 +30,7 @@ namespace pacmanduelbot.helpers
                 && !(currentPoint.X.Equals(Guide._RESPAWN_X - 1) && currentPoint.Y.Equals(Guide._RESPAWN_Y)))
             {
                 if ((currentPoint.X.Equals(Guide._RESPAWN_X) && currentPoint.Y.Equals(Guide._RESPAWN_Y))
-                    && maze[currentPoint.X + 1][currentPoint.Y].Equals(Guide._OPONENT_SYMBOL))
+                    && maze[currentPoint.X + 1][currentPoint.Y].Equals(Guide._OPPONENT_SYMBOL))
                 {
                     //do nothing          
                 }
@@ -46,7 +46,7 @@ namespace pacmanduelbot.helpers
                 && !(currentPoint.X.Equals(Guide._RESPAWN_X + 1) && currentPoint.Y.Equals(Guide._RESPAWN_Y)))
             {
                 if ((currentPoint.X.Equals(Guide._RESPAWN_X) && currentPoint.Y.Equals(Guide._RESPAWN_Y))
-                    && maze[currentPoint.X - 1][currentPoint.Y].Equals(Guide._OPONENT_SYMBOL))
+                    && maze[currentPoint.X - 1][currentPoint.Y].Equals(Guide._OPPONENT_SYMBOL))
                 {
                     //do nothing
                 }
