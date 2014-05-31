@@ -42,8 +42,6 @@ namespace pacmanduelbot.models
             return result;
         }
 
-
-
         public static bool isSelfRespawn()
         {
             int _RESPAWN_NEEDED;
@@ -75,25 +73,6 @@ namespace pacmanduelbot.models
             return result;
         }
 
-        public static bool isTheGameStart(char[][] _maze)
-        {
-            var _PILL_COUNT = 0;
-            var result = false;
-            for (var x = 0; x < Guide._HEIGHT; x++)
-            {
-                for (var y = 0; y < Guide._WIDTH; y++)
-                {
-                    if (_maze[x][y].Equals(Guide._PILL)
-                        || _maze[x][y].Equals(Guide._BONUS_PILL))
-                        _PILL_COUNT++;
-
-                }
-            }
-            if (_PILL_COUNT > Guide._PILLS - 2)
-                result = true;
-            return result;
-        }
-
         public static void FillUpPoisonInventory()
         {
             string _input = "1,0";
@@ -103,7 +82,6 @@ namespace pacmanduelbot.models
                 file.Close();
             }
         }
-
 
         public static void DropPoisonPill()
         {
