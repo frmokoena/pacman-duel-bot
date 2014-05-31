@@ -221,15 +221,13 @@ namespace pacmanduelbot.helpers
             var _node = new BuildPathNode { _position = _start, _g = _gG, _h = _hH, _f = _fF };
 
             _open.Add(_node);
-            var _found = false;
-            
-            while (!_found)
+                        
+            while (_open.Count != 0)
             {
                 var _current = LowestRank(_open);                
                 if ((_current._position.X == _goal.X)
                     && (_current._position.Y == _goal.Y))
                 {
-                    _found = true;//goal found
                     //traverse back
                     while (!(_current.parent._position.X==_start.X
                            &&_current.parent._position.Y==_start.Y))
@@ -237,6 +235,7 @@ namespace pacmanduelbot.helpers
                         _current = _current.parent;
                     }
                     _next = _current._position;
+                    break;
                 }
 
                 _closed.Add(_current);
