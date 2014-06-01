@@ -9,7 +9,7 @@ namespace pacmanduelbot.brainbox
     public class Bot
     {
         private char[][] _maze { get; set; }
-        public bool _DROP_PILL = false;
+        private bool _DROP_PILL { get; set; }
 
         public Bot() { }
 
@@ -124,22 +124,28 @@ namespace pacmanduelbot.brainbox
             switch(list.Count)
             {
                 case 0:
-                    //var _goal = FindNearbyPill();
                     if (!PoisonInventory.arePoisonPillsExhausted()
-                        && !(_CURRENT_POSITION.X == Guide._RESPAWN_X && _CURRENT_POSITION.Y==Guide._RESPAWN_Y))
+                        && !(_CURRENT_POSITION.X == Guide._RESPAWN_X && _CURRENT_POSITION.Y==Guide._RESPAWN_Y)
+                        && !(_CURRENT_POSITION.X == Guide._EXIT_UP_X && _CURRENT_POSITION.Y==Guide._EXIT_UP_Y)
+                        && !(_CURRENT_POSITION.X == Guide._EXIT_DOWN_X && _CURRENT_POSITION.Y==Guide._EXIT_DOWN_Y))
                     {
+                        if (_CURRENT_POSITION.X < 9 && _next.X > 11)
+                            _DROP_PILL = true;
+                        if (_CURRENT_POSITION.X > 11 && _next.X < 9)
+                            _DROP_PILL = true;
+
+                        /*
                         var _mapping = Mappings.ManhattanDistance(_CURRENT_POSITION, _next);
                         if (_mapping > 10)
-                            _DROP_PILL = true;
+                            _DROP_PILL = true;*/
                     }
-
                     _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
                     break;
                 case 1:
                     _move = list[0];
                     break;
                 default:
-                    _move = Moves.ChoosePath(_maze, _CURRENT_POSITION,30);
+                    _move = Moves.ChoosePath(_maze, _CURRENT_POSITION,100);
                     break;
             }
             return _move;
@@ -161,7 +167,7 @@ namespace pacmanduelbot.brainbox
                     {
                         _next = new Point { X = x, Y = y };
                         var tempH = Mappings.ManhattanDistance(_CURRENT_POSITION, _next);
-                        if (tempH < 8)
+                        if (tempH < 10)
                             return _next;
                     }
                 }
