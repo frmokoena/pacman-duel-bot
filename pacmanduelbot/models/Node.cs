@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace pacmanduelbot.models
 {
-    class BuildPathNode
+    class Node
     {
         public Point _position { get; set; }
 
@@ -16,7 +16,11 @@ namespace pacmanduelbot.models
         public int _h { get; set; }
         public int _f { get; set; }
 
+        //choose path
+        public bool _isLeaf { get; set; }
+        public int _score { get; set; }
+
         //both        
-        public BuildPathNode parent = null;
+        public Node _parent { get; set; }
     }
 }

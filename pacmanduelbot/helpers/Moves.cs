@@ -1,11 +1,7 @@
 ﻿using pacmanduelbot.models;
 using pacmanduelbot.shared;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace pacmanduelbot.helpers
 {
@@ -68,45 +64,48 @@ namespace pacmanduelbot.helpers
         public static Point ChoosePath(char[][] _maze, Point _current_position, int _depth)
         {
             var _next = new Point();
-            var _open = new List<ChoosePathNode>();
-            var _closed = new List<ChoosePathNode>();
-            var _node = new ChoosePathNode { _position = _current_position };
+            var _open = new List<Node>();
+            var _closed = new List<Node>();
+
+            var _node = new Node { _position = _current_position };
+            
             _open.Add(_node);
+
             var _count = 0;
 
             while (_open.Count != 0 && _count < _depth)
             {
-                _closed.Add(_open[0]);
+                var _open_root = _open[0];
+                _closed.Add(_open_root);
 
-                var _tempI = NextPossiblePositions(_maze, _open[0]._position);
+                var _tempI = NextPossiblePositions(_maze, _open_root._position);
                 
                 foreach (var _point in  _tempI)
                 {
-                    if (_open[0]._parent != null)
+                    var _case = _maze[_point.X][_point.Y];
+                    if (_open_root._parent != null)
                     {
-                        if (!(_point.X == _open[0]._parent._position.X && _point.Y == _open[0]._parent._position.Y))
+                        if (!(_point.X == _open_root._parent._position.X && _point.Y == _open_root._parent._position.Y))
                         {
-                            var _case = _maze[_point.X][_point.Y];
-
                             switch(_case)
                             {
                                 case Guide._PILL:
-                                    var _path_node = new ChoosePathNode
+                                    var _path_node = new Node
                                     { 
                                         _position = _point,
-                                        _score=_open[0]._score + 1,
-                                        _isLeaf=isLeaf(_maze,_point,_open[0]._position),
-                                        _parent = _open[0]
+                                        _score=_open_root._score + 1,
+                                        _isLeaf=isLeaf(_maze,_point,_open_root._position),
+                                        _parent = _open_root
                                     };
                                     _open.Add(_path_node);
                                     break;
                                 case Guide._BONUS_PILL:
-                                    _path_node = new ChoosePathNode
+                                    _path_node = new Node
                                     {
                                         _position = _point,
-                                        _score=_open[0]._score + 10,
-                                        _isLeaf = isLeaf(_maze, _point, _open[0]._position),
-                                        _parent = _open[0]
+                                        _score=_open_root._score + 10,
+                                        _isLeaf = isLeaf(_maze, _point, _open_root._position),
+                                        _parent = _open_root
                                     };
                                     _open.Add(_path_node);
                                     break;
@@ -117,26 +116,25 @@ namespace pacmanduelbot.helpers
                     }
                     else
                     {
-                        var _case = _maze[_point.X][_point.Y];
                         switch (_case)
                         {
                             case Guide._PILL:
-                                var _path_node = new ChoosePathNode
+                                var _path_node = new Node
                                 {
                                     _position = _point,
-                                    _score = _open[0]._score + 1,
-                                    _isLeaf = isLeaf(_maze,_point,_open[0]._position),
-                                    _parent = _open[0]
+                                    _score = _open_root._score + 1,
+                                    _isLeaf = isLeaf(_maze,_point,_open_root._position),
+                                    _parent = _open_root
                                 };
                                 _open.Add(_path_node);
                                 break;
                             case Guide._BONUS_PILL:
-                                _path_node = new ChoosePathNode
+                                _path_node = new Node
                                 {
                                     _position = _point,
-                                    _score = _open[0]._score + 10,
-                                    _isLeaf = isLeaf(_maze,_point,_open[0]._position),
-                                    _parent = _open[0]
+                                    _score = _open_root._score + 10,
+                                    _isLeaf = isLeaf(_maze,_point,_open_root._position),
+                                    _parent = _open_root
                                 };
                                 _open.Add(_path_node);
                                 break;
@@ -145,20 +143,21 @@ namespace pacmanduelbot.helpers
                         }
                     }
                 }
-                _open.Remove(_open[0]);
+                _open.Remove(_open_root);
                 _count++;
             }
 
-            var curr = new ChoosePathNode();
+            var curr = new Node();
                        
             foreach(var _item in _closed)
             {
 
                 if(_item._isLeaf)
                 {
-                    if(curr._position.IsEmpty)
+                    if (_item._score == 1)
                     {
-                        curr = _item;
+                        _next = _item._position;
+                        return _next;
                     }
                     else
                     {
@@ -169,31 +168,34 @@ namespace pacmanduelbot.helpers
                     }
                 }
             }
-
             
             //traverse back
+            var _closed_root = _closed[0];
             if (curr._position.IsEmpty)
             {
-                curr = _closed[_closed.Count - 1];
-                while (!(curr._parent._position.X==_closed[0]._position.X&&curr._parent._position.Y==_closed[0]._position.Y))
+                foreach (var _item in _closed)
+                {
+                    if (_item._score > curr._score)
+                    {
+                        curr = _item;
+                    }
+                }
+                while (!(curr._parent._position.X==_closed_root._position.X&&curr._parent._position.Y==_closed_root._position.Y))
                     curr = curr._parent;
                 _next = curr._position;
-
             }
             else
             {
-                while (!(curr._parent._position.X == _closed[0]._position.X && curr._parent._position.Y == _closed[0]._position.Y))
+                while (!(curr._parent._position.X == _closed_root._position.X && curr._parent._position.Y == _closed_root._position.Y))
                     curr = curr._parent;
                 _next = curr._position;
             }
-
-
             return _next;
         }
 
-        private static bool isLeaf(char[][] _maze,Point _point, Point _parent)
+        private static bool isLeaf(char[][] _maze, Point _point, Point _parent)
         {
-            var isLeaf = true;
+            var _isLeaf = true;
             var _list = NextPossiblePositions(_maze, _point);
 
             foreach (var _item in  _list)
@@ -202,23 +204,23 @@ namespace pacmanduelbot.helpers
                     && (_maze[_item.X][_item.Y].Equals(Guide._BONUS_PILL)
                     || _maze[_item.X][_item.Y].Equals(Guide._PILL)))
                 {
-                    isLeaf = false;
+                    _isLeaf = false;
                     break;
                 }
             }
-            return isLeaf;
+            return _isLeaf;
         }
         
         public static Point BuildPath(char[][] _maze, Point _start, Point _goal)
         {
             var _next = new Point();
-            var _open = new List<BuildPathNode>();
-            var _closed = new List<BuildPathNode>();
+            var _open = new List<Node>();
+            var _closed = new List<Node>();
 
             var _gG = 0;
             var _hH = Mappings.ManhattanDistance(_start, _goal);
             var _fF = _gG + _hH;
-            var _node = new BuildPathNode { _position = _start, _g = _gG, _h = _hH, _f = _fF };
+            var _node = new Node { _position = _start, _g = _gG, _h = _hH, _f = _fF };
 
             _open.Add(_node);
                         
@@ -229,10 +231,10 @@ namespace pacmanduelbot.helpers
                     && (_current._position.Y == _goal.Y))
                 {
                     //traverse back
-                    while (!(_current.parent._position.X==_start.X
-                           &&_current.parent._position.Y==_start.Y))
+                    while (!(_current._parent._position.X==_start.X
+                           &&_current._parent._position.Y==_start.Y))
                     {
-                        _current = _current.parent;
+                        _current = _current._parent;
                     }
                     _next = _current._position;
                     break;
@@ -249,7 +251,7 @@ namespace pacmanduelbot.helpers
                     _gG = _current._g + 1;
                     _hH = Mappings.ManhattanDistance(_neighbor, _goal);
                     _fF = _gG + _hH;
-                    var _curr = new BuildPathNode { _position = _neighbor, _g = _gG, _h = _hH, _f = _fF, parent = _current };
+                    var _curr = new Node { _position = _neighbor, _g = _gG, _h = _hH, _f = _fF, _parent = _current };
                     if (!_closed.Contains(_curr))
                     {
                         //add it to open list
@@ -275,10 +277,10 @@ namespace pacmanduelbot.helpers
                 return _found;
         }*/
 
-        private static BuildPathNode LowestRank(List<BuildPathNode> _nodes)
+        private static Node LowestRank(List<Node> _nodes)
         {
-            var _result = new BuildPathNode();
-            if (_nodes.Count==0)
+            var _result = new Node();
+            if (_nodes.Count == 0)
             {
                 _result = null;
             }
