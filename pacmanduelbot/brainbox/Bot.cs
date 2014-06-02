@@ -182,8 +182,9 @@ namespace pacmanduelbot.brainbox
                     if (_maze[x][y].Equals(Guide._BONUS_PILL))
                     {
                         _next = new Point { X = x, Y = y };
-                        var tempH = Mappings.ManhattanDistance(_CURRENT_POSITION, _next);
-                        if (tempH < 10)
+                        var _temp = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
+                        var _tempg = _temp[0].X;
+                        if (_tempg < 10)
                             return _next;
                     }
                 }
