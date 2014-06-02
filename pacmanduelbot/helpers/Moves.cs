@@ -209,9 +209,9 @@ namespace pacmanduelbot.helpers
             return _isLeaf;
         }
         
-        public static Point BuildPath(char[][] _maze, Point _start, Point _goal)
+        public static List<Point> BuildPath(char[][] _maze, Point _start, Point _goal)
         {
-            var _next = new Point();
+            var _list = new List<Point>();
             var _open = new List<Node>();
             var _closed = new List<Node>();
 
@@ -228,13 +228,15 @@ namespace pacmanduelbot.helpers
                 if ((_current._position.X == _goal.X)
                     && (_current._position.Y == _goal.Y))
                 {
+                    _list.Add(new Point { X = _current._g });
                     //traverse back
                     while (!(_current._parent._position.X==_start.X
                            &&_current._parent._position.Y==_start.Y))
                     {
                         _current = _current._parent;
                     }
-                    _next = _current._position;
+                    _list.Add(_current._position);
+                    //_list = _current._position;
                     break;
                 }
 
@@ -257,7 +259,7 @@ namespace pacmanduelbot.helpers
                     }
                 }
             }
-            return _next;
+            return _list;
         }
 
         /*

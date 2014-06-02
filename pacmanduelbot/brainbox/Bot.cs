@@ -103,12 +103,17 @@ namespace pacmanduelbot.brainbox
 
         public Point NextMove()
         {
-            var _move = new Point();
+            var _move = new List<Point>();
+            var _next_move = new Point();
             var list = new List<Point>();
 
             var _next = FindNearbyPill();
             if (_maze[_next.X][_next.Y].Equals(Guide._BONUS_PILL))
-                return Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
+            {
+                _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
+                return _move[1];
+            }
+                
 
             var possibleMoveList = Moves.NextPossiblePositions(_maze, _CURRENT_POSITION);
 
@@ -129,26 +134,37 @@ namespace pacmanduelbot.brainbox
                         && !(_CURRENT_POSITION.X == Guide._EXIT_UP_X && _CURRENT_POSITION.Y==Guide._EXIT_UP_Y)
                         && !(_CURRENT_POSITION.X == Guide._EXIT_DOWN_X && _CURRENT_POSITION.Y==Guide._EXIT_DOWN_Y))
                     {
+                        var _temp = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
+                        var _gd = _temp[0].X;
+                        _temp = Moves.BuildPath(_maze, new Point { X = Guide._RESPAWN_X, Y = Guide._RESPAWN_Y }, _next);
+                        var _gr = _temp[0].X + 5;
+
+                        if (_gr < _gd)
+                            _DROP_PILL = true;
+                        
+                        /*
                         if (_CURRENT_POSITION.X < 9 && _next.X > 11)
                             _DROP_PILL = true;
                         if (_CURRENT_POSITION.X > 11 && _next.X < 9)
                             _DROP_PILL = true;
 
-                        /*
+                        
                         var _mapping = Mappings.ManhattanDistance(_CURRENT_POSITION, _next);
                         if (_mapping > 10)
                             _DROP_PILL = true;*/
                     }
+
                     _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
+                    _next_move = _move[1];
                     break;
                 case 1:
-                    _move = list[0];
+                    _next_move = list[0];
                     break;
                 default:
-                    _move = Moves.ChoosePath(_maze, _CURRENT_POSITION,100);
+                    _next_move = Moves.ChoosePath(_maze, _CURRENT_POSITION,100);
                     break;
             }
-            return _move;
+            return _next_move;
         }
 
         public Point FindNearbyPill()
