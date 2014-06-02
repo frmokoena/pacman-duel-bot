@@ -148,30 +148,9 @@ namespace pacmanduelbot.helpers
             }
 
             var curr = new Node();
-                       
-            foreach(var _item in _closed)
-            {
-
-                if(_item._isLeaf)
-                {
-                    if (_item._score == 1)
-                    {
-                        _next = _item._position;
-                        return _next;
-                    }
-                    else
-                    {
-                        if(_item._score > curr._score)
-                        {
-                            curr = _item;
-                        }
-                    }
-                }
-            }
-            
-            //traverse back
             var _closed_root = _closed[0];
-            if (curr._position.IsEmpty)
+
+            if (!(_open.Count == 0))
             {
                 foreach (var _item in _closed)
                 {
@@ -180,16 +159,35 @@ namespace pacmanduelbot.helpers
                         curr = _item;
                     }
                 }
-                while (!(curr._parent._position.X==_closed_root._position.X&&curr._parent._position.Y==_closed_root._position.Y))
-                    curr = curr._parent;
-                _next = curr._position;
-            }
-            else
-            {
                 while (!(curr._parent._position.X == _closed_root._position.X && curr._parent._position.Y == _closed_root._position.Y))
                     curr = curr._parent;
                 _next = curr._position;
+                return _next;
             }
+
+            foreach (var _item in _closed)
+            {
+
+                if (_item._isLeaf)
+                {
+                    if (_item._score == 1)
+                    {
+                        _next = _item._position;
+                        return _next;
+                    }
+                    else
+                    {
+                        if (_item._score > curr._score)
+                        {
+                            curr = _item;
+                        }
+                    }
+                }
+            }
+
+            while (!(curr._parent._position.X == _closed_root._position.X && curr._parent._position.Y == _closed_root._position.Y))
+                curr = curr._parent;
+            _next = curr._position;
             return _next;
         }
 
