@@ -8,13 +8,9 @@ namespace pacmanduelbot.brainbox
 {
     public class Bot
     {
-        private char[][] _maze { get; set; }
+        public char[][] _maze { get; set; }
         private bool _DROP_PILL { get; set; }
-        public Bot(char[][] _maze)
-        {
-            this._maze = _maze; 
-        }
-
+ 
         public Point _CURRENT_POSITION
         {
             get

@@ -2,19 +2,20 @@
 using pacmanduelbot.brainbox;
 using pacmanduelbot.helpers;
 using pacmanduelbot.models;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace pacmanduelbot.UnitTests.helpers
 {
     [TestFixture]
-    public class MovesGeneratorTest
+    public class MovesTest
     {
         [Test]
         public void TestGenerateNextPossiblePositions()
         {
             string _filepath1 = @"..\..\..\game.state";
             var _maze = Maze.Read(_filepath1);
-            Bot _Bot = new Bot { _maze = _maze };
+            Bot _Bot = new Bot(_maze);
 
             var _currentP = _Bot._CURRENT_POSITION;
 
@@ -34,8 +35,13 @@ namespace pacmanduelbot.UnitTests.helpers
         {
             string _filepath1 = @"..\..\..\game.state";
             var _maze = Maze.Read(_filepath1);
+            var list = new List<Point>
+            {
+                new Point{X = 20,Y = 11},
+                new Point{X = 19,Y = 10}
+            };
 
-            var result = Moves.ChoosePath(_maze, new Point { X = 1, Y = 8 },4);
+            var result = Moves.ChoosePath(_maze, list,10);
 
             var _test = false;
             if (result.X == 19 && result.Y == 10)
