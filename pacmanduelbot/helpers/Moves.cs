@@ -167,7 +167,6 @@ namespace pacmanduelbot.helpers
 
             foreach (var _item in _closed)
             {
-
                 if (_item._isLeaf)
                 {
                     if (_item._score == 1)
@@ -244,8 +243,7 @@ namespace pacmanduelbot.helpers
                 _open.Remove(_current);//remove it from open list
 
                 var _neighbors = NextPossiblePositions(_maze, _current._position);
-
-
+                
                 foreach(var _neighbor in _neighbors)
                 {
                     _gG = _current._g + 1;

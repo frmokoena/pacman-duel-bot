@@ -6,11 +6,11 @@ namespace pacmanduelbot.models
     public class PoisonInventory
     {
         public static readonly string _poisonfilepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
-         + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-         + "poison_pill.csv";
-        //public static readonly string _poisonfilepath = ".." + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar
-        //+ ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-        //+ "POISON_PILL.csv";
+            + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
+            + "poison_pill.csv";
+        //public static readonly string _poisonfilepath = ".." + System.IO.Path.DirectorySeparatorChar + ".."
+        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
+        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "POISON_PILL.csv";
         public static bool arePoisonPillsExhausted()
         {
             int _NUMBER_OF_POISON_PILLS;
@@ -31,8 +31,7 @@ namespace pacmanduelbot.models
             {
                 Console.Write(e.ToString());
             }
-
-
+            
             bool parsed = Int32.TryParse(_CONTENTS[0], out _NUMBER_OF_POISON_PILLS);
 
             if (!parsed)
@@ -62,8 +61,7 @@ namespace pacmanduelbot.models
             {
                 Console.Write(e.ToString());
             }
-
-
+            
             bool parsed = Int32.TryParse(_CONTENTS[1], out _RESPAWN_NEEDED);
 
             if (!parsed)
@@ -102,6 +100,5 @@ namespace pacmanduelbot.models
                 file.Close();
             }
         }
-
     }
 }

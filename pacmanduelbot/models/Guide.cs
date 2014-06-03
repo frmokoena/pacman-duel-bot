@@ -11,11 +11,11 @@ namespace pacmanduelbot.models
         public const int _PORTAL2_X = 10;
         public const int _PORTAL2_Y = 18;
 
-        //Re-spawn point
+        //Re-spawn zone
         public const int _RESPAWN_X = 10;
         public const int _RESPAWN_Y = 9;
 
-        //Re-spawn forbidden region
+        //Re-spawn forbidden zone
         public const int _FORBIDDEN_L_X = 10;
         public const int _FORBIDDEN_L_Y = 8;
         public const int _FORBIDDEN_R_X = 10;
