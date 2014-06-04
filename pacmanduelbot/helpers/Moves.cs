@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace pacmanduelbot.helpers
 {
-    public static class Moves
+    class Moves
     {
         public static List<Point> NextPossiblePositions(char[][] maze, Point currentPoint)
         {

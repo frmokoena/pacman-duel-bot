@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace pacmanduelbot.models
 {
-    public static class Maze
+    class Maze
     {
         public static char[][] Read(String filePath)
         {

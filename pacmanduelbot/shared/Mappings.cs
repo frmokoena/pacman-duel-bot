@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace pacmanduelbot.shared
 {
-    public static class Mappings
+    class Mappings
     {
         public static int ManhattanDistance(Point _start, Point _finish)
         {

@@ -9,9 +9,9 @@ namespace pacmanduelbot.UnitTests.models
         [Test]
         public void TestArePoisonPillsExhausted()
         {
-            var result = PoisonInventory.arePoisonPillsExhausted();
+            //var result = PoisonInventory.arePoisonPillsExhausted();
 
-            Assert.True(result);
+            //Assert.True(result);
 
 
         }
@@ -19,8 +19,8 @@ namespace pacmanduelbot.UnitTests.models
         [Test]
         public void TestIfGameStart()
         {
-            string _filepath1 = @"..\..\..\game.state";
-            var _maze = Maze.Read(_filepath1);
+            //string _filepath1 = @"..\..\..\game.state";
+            //var _maze = Maze.Read(_filepath1);
 
             //bool result = PoisonInventory.isTheGameStart(_maze);
 
@@ -29,10 +29,10 @@ namespace pacmanduelbot.UnitTests.models
         [Test]
         public void TestFillUpPoisonInventory()
         {
-            string _filepath1 = @"..\..\..\game.state";
-            var _maze = Maze.Read(_filepath1);
+            //string _filepath1 = @"..\..\..\game.state";
+            //var _maze = Maze.Read(_filepath1);
 
-            PoisonInventory.FillUpPoisonInventory();
+            //PoisonInventory.FillUpPoisonInventory();
             //bool result = PoisonInventory.isTheGameStart(_maze);
 
             //Assert.True(result);

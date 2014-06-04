@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace pacmanduelbot.models
 {
-    public class PoisonInventory
+    class PoisonInventory
     {
         public static readonly string _poisonfilepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
             + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar

@@ -1,7 +1,7 @@
 ﻿
 namespace pacmanduelbot.models
 {
-    public static class Guide
+    class Guide
     {
         //Maze borders
         public const int _WIDTH = 19;

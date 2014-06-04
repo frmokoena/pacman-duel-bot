@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace pacmanduelbot.brainbox
 {
-    public class Bot
+    class Bot
     {
         public char[][] _maze { get; set; }
         private bool _DROP_PILL { get; set; }
@@ -49,7 +49,7 @@ namespace pacmanduelbot.brainbox
             return _maze;
         }
 
-        public char[][] MakeMoveAndDropPill(Point _move)
+        private char[][] MakeMoveAndDropPill(Point _move)
         {
             _maze[_CURRENT_POSITION.X][_CURRENT_POSITION.Y] = Guide._POISON_PILL;
             _maze[_move.X][_move.Y] = Guide._PLAYER_SYMBOL;
@@ -58,7 +58,7 @@ namespace pacmanduelbot.brainbox
             return _maze;
         }
 
-        public char[][] SelfRespawn(Point _move)
+        private char[][] SelfRespawn(Point _move)
         {
             var _next = new Point();
             var list = Moves.NextPossiblePositions(_maze, _CURRENT_POSITION);
@@ -84,13 +84,13 @@ namespace pacmanduelbot.brainbox
             return _maze;
         }
 
-        public bool needSelfRespawn()
+        private bool needSelfRespawn()
         {
             var result = PoisonInventory.isSelfRespawn();
             return result;
         }
 
-        public Point NextMove()
+        private Point NextMove()
         {
             var _move = new List<Point>();
             var _next_move = new Point();
@@ -147,7 +147,7 @@ namespace pacmanduelbot.brainbox
             return _next_move;
         }
 
-        public Point FindNearbyPill()
+        private Point FindNearbyPill()
         {
             var _next = new Point();
             var _open = new List<Point>();
