@@ -10,7 +10,7 @@ namespace pacmanduelbot.brainbox
     {
         public char[][] _maze { get; set; }
         private bool _DROP_PILL { get; set; }
- 
+
         public Point _CURRENT_POSITION
         {
             get
@@ -36,7 +36,7 @@ namespace pacmanduelbot.brainbox
             if (!_CURRENT_POSITION.IsEmpty)
             {
                 var _next_position = NextMove();
-                
+
                 if (needSelfRespawn())
                     return SelfRespawn(_next_position);
 
@@ -101,7 +101,7 @@ namespace pacmanduelbot.brainbox
             {
                 _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
                 return _move[1];
-            }    
+            }
 
             var possibleMoveList = Moves.NextPossiblePositions(_maze, _CURRENT_POSITION);
 
@@ -113,13 +113,13 @@ namespace pacmanduelbot.brainbox
                     list.Add(_point);
             }
 
-            switch(list.Count)
+            switch (list.Count)
             {
                 case 0:
                     if (!PoisonInventory.arePoisonPillsExhausted()
-                        && !(_CURRENT_POSITION.X == Guide._RESPAWN_X && _CURRENT_POSITION.Y==Guide._RESPAWN_Y)
-                        && !(_CURRENT_POSITION.X == Guide._EXIT_UP_X && _CURRENT_POSITION.Y==Guide._EXIT_UP_Y)
-                        && !(_CURRENT_POSITION.X == Guide._EXIT_DOWN_X && _CURRENT_POSITION.Y==Guide._EXIT_DOWN_Y))
+                        && !(_CURRENT_POSITION.X == Guide._RESPAWN_X && _CURRENT_POSITION.Y == Guide._RESPAWN_Y)
+                        && !(_CURRENT_POSITION.X == Guide._EXIT_UP_X && _CURRENT_POSITION.Y == Guide._EXIT_UP_Y)
+                        && !(_CURRENT_POSITION.X == Guide._EXIT_DOWN_X && _CURRENT_POSITION.Y == Guide._EXIT_DOWN_Y))
                     {
                         var _temp = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
                         var _gd = _temp[0].X;
@@ -127,7 +127,7 @@ namespace pacmanduelbot.brainbox
                         var _gr = _temp[0].X + 5;
 
                         if (_gr < _gd)
-                            _DROP_PILL = true;                        
+                            _DROP_PILL = true;
                         /*
                         if (_CURRENT_POSITION.X < 9 && _next.X > 11)
                             _DROP_PILL = true;
@@ -141,7 +141,7 @@ namespace pacmanduelbot.brainbox
                     _next_move = list[0];
                     break;
                 default:
-                    _next_move = Moves.ChoosePath(_maze, _CURRENT_POSITION,100);
+                    _next_move = Moves.ChoosePath(_maze, _CURRENT_POSITION, 100);
                     break;
             }
             return _next_move;
@@ -154,7 +154,7 @@ namespace pacmanduelbot.brainbox
             var _closed = new List<Point>();
 
             _open.Add(_CURRENT_POSITION);
-            
+
             for (var x = 0; x < Guide._HEIGHT; x++)
             {
                 for (var y = 0; y < Guide._WIDTH; y++)

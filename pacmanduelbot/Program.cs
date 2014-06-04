@@ -14,7 +14,7 @@ namespace pacmanduelbot
             //string _filepath1 = @"..\..\..\game.state";
             //var _maze = Maze.Read(_filepath1); 
 
-             
+
         }
 
         public static bool isTheGameStart(char[][] _maze)

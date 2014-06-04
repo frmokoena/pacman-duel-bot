@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{87E88D51-137C-4A47-893C-96A8F8DC25B0}</ProjectGuid>
+    <ProjectGuid>{13CAF125-28A7-4157-91EB-F18E7B214B89}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>pacmanduelbot.UnitTests</RootNamespace>
     <AssemblyName>pacmanduelbot.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -48,11 +48,8 @@
     <Compile Include="shared\MappingsTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\pacmanduelbot\pacmanduelbot.csproj">
-      <Project>{0e99aaca-d69f-4ddf-b3c2-a4340ceab58b}</Project>
+      <Project>{32cbe730-e4a5-4756-818c-53903316f4de}</Project>
       <Name>pacmanduelbot</Name>
     </ProjectReference>
   </ItemGroup>

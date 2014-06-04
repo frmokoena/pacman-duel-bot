@@ -31,7 +31,7 @@ namespace pacmanduelbot.models
             {
                 Console.Write(e.ToString());
             }
-            
+
             bool parsed = Int32.TryParse(_CONTENTS[0], out _NUMBER_OF_POISON_PILLS);
 
             if (!parsed)
@@ -61,7 +61,7 @@ namespace pacmanduelbot.models
             {
                 Console.Write(e.ToString());
             }
-            
+
             bool parsed = Int32.TryParse(_CONTENTS[1], out _RESPAWN_NEEDED);
 
             if (!parsed)
