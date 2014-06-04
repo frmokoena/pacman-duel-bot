@@ -1,6 +1,5 @@
 ﻿using pacmanduelbot.helpers;
 using pacmanduelbot.models;
-using pacmanduelbot.shared;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -86,8 +85,7 @@ namespace pacmanduelbot.brainbox
 
         private bool needSelfRespawn()
         {
-            var result = PoisonInventory.isSelfRespawn();
-            return result;
+            return PoisonInventory.isSelfRespawn();
         }
 
         private Point NextMove()
@@ -116,14 +114,14 @@ namespace pacmanduelbot.brainbox
             switch (list.Count)
             {
                 case 0:
+                    _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
                     if (!PoisonInventory.arePoisonPillsExhausted()
                         && !(_CURRENT_POSITION.X == Guide._RESPAWN_X && _CURRENT_POSITION.Y == Guide._RESPAWN_Y)
                         && !(_CURRENT_POSITION.X == Guide._EXIT_UP_X && _CURRENT_POSITION.Y == Guide._EXIT_UP_Y)
                         && !(_CURRENT_POSITION.X == Guide._EXIT_DOWN_X && _CURRENT_POSITION.Y == Guide._EXIT_DOWN_Y))
                     {
-                        var _temp = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
-                        var _gd = _temp[0].X;
-                        _temp = Moves.BuildPath(_maze, new Point { X = Guide._RESPAWN_X, Y = Guide._RESPAWN_Y }, _next);
+                        var _gd = _move[0].X;
+                        var _temp = Moves.BuildPath(_maze, new Point { X = Guide._RESPAWN_X, Y = Guide._RESPAWN_Y }, _next);
                         var _gr = _temp[0].X + 5;
 
                         if (_gr < _gd)
@@ -133,8 +131,7 @@ namespace pacmanduelbot.brainbox
                             _DROP_PILL = true;
                         if (_CURRENT_POSITION.X > 11 && _next.X < 9)
                             _DROP_PILL = true;*/
-                    }
-                    _move = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
+                    }                    
                     _next_move = _move[1];
                     break;
                 case 1:
