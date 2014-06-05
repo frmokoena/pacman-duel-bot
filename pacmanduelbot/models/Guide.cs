@@ -35,9 +35,6 @@ namespace pacmanduelbot.models
         public const char _POISON_PILL = '!';
         public const char _WALL = '#';
         public const int _PILLS = 183;
-
-        public const int _UPPER = _HEIGHT / 2;
-        public const int _LOWER = _UPPER - 1;
         
         //tunnel
         public const int _TUNNEL = 10;
