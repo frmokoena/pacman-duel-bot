@@ -208,24 +208,29 @@ namespace pacmanduelbot.helpers
             return _isLeaf;
         }
 
-        public static List<Point> BuildPath(char[][] _maze, Point _start, Point _goal)
+        public static List<Point> BuildPath(char[][] _maze, Point _start, Point _target)
         {
             var _list = new List<Point>();
             var _open = new List<Node>();
             var _closed = new List<Node>();
 
-            var _gG = 0;
-            var _hH = Mappings.ManhattanDistance(_start, _goal);
-            var _fF = _gG + _hH;
-            var _node = new Node { _position = _start, _g = _gG, _h = _hH, _f = _fF };
-
-            _open.Add(_node);
+            var g = 0;
+            var h = Mappings.ManhattanDistance(_start, _target);
+            var f = Mappings.CalculateWeight(g, h);
+            var _curr = new Node
+            {
+                _position = _start,
+                _g = g,
+                _h = h,
+                _f = f,
+            };
+            _open.Add(_curr);
 
             while (_open.Count != 0)
             {
                 var _current = LowestRank(_open);
-                if ((_current._position.X == _goal.X)
-                    && (_current._position.Y == _goal.Y))
+                if ((_current._position.X == _target.X)
+                    && (_current._position.Y == _target.Y))
                 {
                     _list.Add(new Point { X = _current._g });
                     //traverse back
@@ -246,10 +251,17 @@ namespace pacmanduelbot.helpers
 
                 foreach (var _neighbor in _neighbors)
                 {
-                    _gG = _current._g + 1;
-                    _hH = Mappings.ManhattanDistance(_neighbor, _goal);
-                    _fF = _gG + _hH;
-                    var _curr = new Node { _position = _neighbor, _g = _gG, _h = _hH, _f = _fF, _parent = _current };
+                    g = _current._g + 1;
+                    h = Mappings.ManhattanDistance(_neighbor, _target);
+                    f = Mappings.CalculateWeight(g, h); 
+                    _curr = new Node
+                    {
+                        _position = _neighbor,
+                        _g = g,
+                        _h = h, 
+                        _f = f, 
+                        _parent = _current
+                    };
                     if (!_closed.Contains(_curr))
                     {
                         //add it to open list
@@ -259,21 +271,6 @@ namespace pacmanduelbot.helpers
             }
             return _list;
         }
-
-        /*
-        private static bool Contains(List<PathNode> _nodes, PathNode _node)
-        {
-            bool _found = false;
-            for (var i = 0; i < _nodes.Count;i++)
-            {
-                if (_nodes[i]._position.X == _node._position.X && _nodes[i]._position.Y == _node._position.Y)
-                {
-                    _found = true;
-                    break;
-                }
-            }
-                return _found;
-        }*/
 
         private static Node LowestRank(List<Node> _nodes)
         {
