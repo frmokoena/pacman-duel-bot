@@ -10,7 +10,7 @@ namespace pacmanduelbot.brainbox
         public char[][] _maze { get; set; }
         private bool _DROP_PILL { get; set; }
 
-        public Point _CURRENT_POSITION
+        private Point _CURRENT_POSITION
         {
             get
             {
@@ -27,6 +27,44 @@ namespace pacmanduelbot.brainbox
                     }
                 }
                 return coordinate;
+            }
+        }
+
+        private int _UPPER_PILL_COUNT
+        {
+            get
+            {
+                var _pill_count = 0;
+                for(var x = 0; x < Guide._TUNNEL; x++)
+                {
+                    for(var y = 0; y < Guide._WIDTH; y++)
+                    {
+                        if(_maze[x][y].Equals(Guide._PILL))
+                            _pill_count++;
+                        if(_maze[x][y].Equals(Guide._BONUS_PILL))
+                            _pill_count = _pill_count+10;
+                    }
+                }
+                return _pill_count;
+            }
+        }
+
+        private int _LOWER_PILL_COUNT
+        {
+            get
+            {
+                var _pill_count = 0;
+                for (var x = Guide._TUNNEL + 1; x < Guide._HEIGHT; x++)
+                {
+                    for (var y = 0; y < Guide._WIDTH; y++)
+                    {
+                        if (_maze[x][y].Equals(Guide._PILL))
+                            _pill_count++;
+                        if (_maze[x][y].Equals(Guide._BONUS_PILL))
+                            _pill_count = _pill_count + 10;
+                    }
+                }
+                return _pill_count;
             }
         }
 
@@ -167,6 +205,56 @@ namespace pacmanduelbot.brainbox
                 }
             }
 
+            //TODO: some intelligence
+            //if
+            if(_CURRENT_POSITION.X <= Guide._TUNNEL
+                && _LOWER_PILL_COUNT > _UPPER_PILL_COUNT + 15)
+            {
+                while (_open.Count != 0)
+                {
+                    var _templist = Moves.NextPossiblePositions(_maze, _open[0]);
+                    _closed.Add(_open[0]);
+                    foreach (var _point in _templist)
+                    {
+                        if (_maze[_point.X][_point.Y] == Guide._BONUS_PILL
+                            || _maze[_point.X][_point.Y] == Guide._PILL)
+                        {
+                            _next = _point;
+                            if(_next.X > Guide._TUNNEL)
+                                return _next;
+                        }
+                        if (!_closed.Contains(_point))
+                            _open.Add(_point);
+                    }
+                    _open.Remove(_open[0]);
+                }
+            }
+
+            //else
+            if(_CURRENT_POSITION.X > Guide._TUNNEL
+                && _UPPER_PILL_COUNT > _LOWER_PILL_COUNT + 15)
+            {
+                while (_open.Count != 0)
+                {
+                    var _templist = Moves.NextPossiblePositions(_maze, _open[0]);
+                    _closed.Add(_open[0]);
+                    foreach (var _point in _templist)
+                    {
+                        if (_maze[_point.X][_point.Y] == Guide._BONUS_PILL
+                            || _maze[_point.X][_point.Y] == Guide._PILL)
+                        {
+                            _next = _point;
+                            if (_next.X < Guide._TUNNEL)
+                                return _next;
+                        }
+                        if (!_closed.Contains(_point))
+                            _open.Add(_point);
+                    }
+                    _open.Remove(_open[0]);
+                }
+            }
+
+            //Otherwise
             while (_open.Count != 0)
             {
                 var _templist = Moves.NextPossiblePositions(_maze, _open[0]);

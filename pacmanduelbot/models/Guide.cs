@@ -38,5 +38,8 @@ namespace pacmanduelbot.models
 
         public const int _UPPER = _HEIGHT / 2;
         public const int _LOWER = _UPPER - 1;
+        
+        //tunnel
+        public const int _TUNNEL = 10;
     }
 }
