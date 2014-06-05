@@ -26,6 +26,5 @@ namespace pacmanduelbot.UnitTests.shared
 
             //Assert.AreEqual(118, result);
         }
-
     }
 }
