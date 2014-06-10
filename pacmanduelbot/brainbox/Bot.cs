@@ -30,6 +30,26 @@ namespace pacmanduelbot.brainbox
             }
         }
 
+        private Point _OPPONENT_POSITION
+        {
+            get
+            {
+                var coordinate = new Point();
+                for (var x = 0; x < Guide._HEIGHT; x++)
+                {
+                    for (var y = 0; y < Guide._WIDTH; y++)
+                    {
+                        if (_maze[x][y].Equals(Guide._OPPONENT_SYMBOL))
+                        {
+                            coordinate.X = x;
+                            coordinate.Y = y;
+                        }
+                    }
+                }
+                return coordinate;
+            }
+        }
+
         private int _UPPER_PILL_COUNT
         {
             get
@@ -42,7 +62,7 @@ namespace pacmanduelbot.brainbox
                         if(_maze[x][y].Equals(Guide._PILL))
                             _pill_count++;
                         if(_maze[x][y].Equals(Guide._BONUS_PILL))
-                            _pill_count = _pill_count+10;
+                            _pill_count = _pill_count + 10;
                     }
                 }
                 return _pill_count;
@@ -98,7 +118,7 @@ namespace pacmanduelbot.brainbox
         private char[][] SelfRespawn(Point _move)
         {
             var _next = new Point();
-            var list = Moves.NextPossiblePositions(_maze, _CURRENT_POSITION);
+            var list = Moves.GenerateMoves(_maze, _CURRENT_POSITION);
             foreach (var _point in list)
             {
                 var _Maze_symbol = _maze[_point.X][_point.Y];
@@ -139,7 +159,7 @@ namespace pacmanduelbot.brainbox
                 return _move[1];
             }
 
-            var possibleMoveList = Moves.NextPossiblePositions(_maze, _CURRENT_POSITION);
+            var possibleMoveList = Moves.GenerateMoves(_maze, _CURRENT_POSITION);
 
             foreach (var _point in possibleMoveList)
             {
@@ -212,7 +232,7 @@ namespace pacmanduelbot.brainbox
             {
                 while (_open.Count != 0)
                 {
-                    var _templist = Moves.NextPossiblePositions(_maze, _open[0]);
+                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     _closed.Add(_open[0]);
                     foreach (var _point in _templist)
                     {
@@ -236,7 +256,7 @@ namespace pacmanduelbot.brainbox
             {
                 while (_open.Count != 0)
                 {
-                    var _templist = Moves.NextPossiblePositions(_maze, _open[0]);
+                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     _closed.Add(_open[0]);
                     foreach (var _point in _templist)
                     {
@@ -244,7 +264,7 @@ namespace pacmanduelbot.brainbox
                             || _maze[_point.X][_point.Y] == Guide._PILL)
                         {
                             _next = _point;
-                            if (_next.X < Guide._TUNNEL)
+                            if (_next.X <= Guide._TUNNEL)
                                 return _next;
                         }
                         if (!_closed.Contains(_point))
@@ -257,7 +277,7 @@ namespace pacmanduelbot.brainbox
             //Otherwise
             while (_open.Count != 0)
             {
-                var _templist = Moves.NextPossiblePositions(_maze, _open[0]);
+                var _templist = Moves.GenerateMoves(_maze, _open[0]);
                 _closed.Add(_open[0]);
                 foreach (var _point in _templist)
                 {
