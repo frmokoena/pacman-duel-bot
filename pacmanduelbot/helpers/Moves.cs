@@ -7,18 +7,18 @@ namespace pacmanduelbot.helpers
 {
     class Moves
     {
-        public static List<Point> NextPossiblePositions(char[][] maze, Point currentPoint)
+        public static List<Point> GenerateMoves(char[][] maze, Point currentPoint)
         {
-            var moveList = new List<Point>();
+            var nextMoves = new List<Point>();
             if (currentPoint.Y + 1 < Guide._WIDTH
                 && !maze[currentPoint.X][currentPoint.Y + 1].Equals(Guide._WALL)
                 && !(currentPoint.X.Equals(Guide._FORBIDDEN_R_X) && currentPoint.Y.Equals(Guide._FORBIDDEN_R_Y - 1)))
-                moveList.Add(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
+                nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
 
             if (currentPoint.Y - 1 >= 0
                 && !maze[currentPoint.X][currentPoint.Y - 1].Equals(Guide._WALL)
                 && !(currentPoint.X.Equals(Guide._FORBIDDEN_L_X) && currentPoint.Y.Equals(Guide._FORBIDDEN_L_Y + 1)))
-                moveList.Add(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
+                nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
 
             if (currentPoint.X + 1 < Guide._HEIGHT
                 && !maze[currentPoint.X + 1][currentPoint.Y].Equals(Guide._WALL)
@@ -32,7 +32,7 @@ namespace pacmanduelbot.helpers
                 }
                 else
                 {
-                    moveList.Add(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
+                    nextMoves.Add(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
                 }
             }
 
@@ -48,17 +48,17 @@ namespace pacmanduelbot.helpers
                 }
                 else
                 {
-                    moveList.Add(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
+                    nextMoves.Add(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
                 }
             }
 
             if (currentPoint.X.Equals(Guide._PORTAL1_X) && currentPoint.Y.Equals(Guide._PORTAL1_Y))
-                moveList.Add(new Point { X = Guide._PORTAL2_X, Y = Guide._PORTAL2_Y });
+                nextMoves.Add(new Point { X = Guide._PORTAL2_X, Y = Guide._PORTAL2_Y });
 
             if (currentPoint.X.Equals(Guide._PORTAL2_X) && currentPoint.Y.Equals(Guide._PORTAL2_Y))
-                moveList.Add(new Point { X = Guide._PORTAL1_X, Y = Guide._PORTAL1_Y });
+                nextMoves.Add(new Point { X = Guide._PORTAL1_X, Y = Guide._PORTAL1_Y });
 
-            return moveList;
+            return nextMoves;
         }
 
         public static Point ChoosePath(char[][] _maze, Point _current_position, int _depth)
@@ -78,7 +78,7 @@ namespace pacmanduelbot.helpers
                 var _open_root = _open[0];
                 _closed.Add(_open_root);
 
-                var _tempI = NextPossiblePositions(_maze, _open_root._position);
+                var _tempI = GenerateMoves(_maze, _open_root._position);
 
                 foreach (var _point in _tempI)
                 {
@@ -193,7 +193,7 @@ namespace pacmanduelbot.helpers
         private static bool isLeaf(char[][] _maze, Point _point, Point _parent)
         {
             var _isLeaf = true;
-            var _list = NextPossiblePositions(_maze, _point);
+            var _list = GenerateMoves(_maze, _point);
 
             foreach (var _item in _list)
             {
@@ -247,7 +247,7 @@ namespace pacmanduelbot.helpers
                 _closed.Add(_current);
                 _open.Remove(_current);//remove it from open list
 
-                var _neighbors = NextPossiblePositions(_maze, _current._position);
+                var _neighbors = GenerateMoves(_maze, _current._position);
 
                 foreach (var _neighbor in _neighbors)
                 {
