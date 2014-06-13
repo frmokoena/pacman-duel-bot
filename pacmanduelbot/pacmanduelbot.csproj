@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="brainbox\Bot.cs" />
+    <Compile Include="Exceptions\UnreadableMazeException.cs" />
     <Compile Include="helpers\Moves.cs" />
+    <Compile Include="models\GameBoard.cs" />
     <Compile Include="models\Guide.cs" />
     <Compile Include="models\Maze.cs" />
     <Compile Include="models\Node.cs" />

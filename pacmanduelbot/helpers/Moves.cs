@@ -7,48 +7,262 @@ namespace pacmanduelbot.helpers
 {
     class Moves
     {
-        public static List<Point> GenerateMoves(char[][] maze, Point currentPoint)
+        public static Point MinMaxDecision(Maze _maze, Point MaxPosition, Point MinPosition)
+        {
+            var _nextMove = new Point();
+
+
+            var gameTree = new List<GameBoard>();
+
+            gameTree.Add(new GameBoard { maze = new Maze(_maze), MaxPlayer = MaxPosition, MinPlayer = MinPosition });
+            var depth = 0;
+            while (!isTerminalState(gameTree) && depth < 6)
+            {
+                var MaxCount = gameTree.Count;
+                for (var i = 0; i < MaxCount; i++)
+                {
+                    //MAX
+                    if (gameTree[i].isLastLevel)
+                    {
+                        gameTree[i].isLastLevel = false;
+                        var moveList = GenerateMoves(gameTree[i].maze, gameTree[i].MaxPlayer);
+                        foreach (var move in moveList)
+                        {
+                            var _MaxPoints = gameTree[i].MaxPoints;
+                            var _symbol = gameTree[i].maze.GetSymbol(move);
+                            if (_symbol.Equals(Guide._PILL))
+                                _MaxPoints++;
+                            else if (_symbol.Equals(Guide._BONUS_PILL))
+                                _MaxPoints += 10;
+                            var gameBoard = new GameBoard
+                            {
+                                maze = new Maze(gameTree[i].maze),
+                                MaxPlayer = move,
+                                MinPlayer = gameTree[i].MinPlayer,
+                                MaxPoints = _MaxPoints,
+                                MinPoints = gameTree[i].MinPoints,
+                                PrecedingBoard = gameTree[i]
+                            };
+                            gameBoard.MakeMove(move, gameTree[i].MaxPlayer, Guide._PLAYER_A);
+                            gameTree.Add(gameBoard);
+                            gameTree[i].Childs.Add(gameBoard);
+                        }
+                    }
+                }
+
+                //MIN
+                if (!isTerminalState(gameTree))
+                {
+                    var MinCount = gameTree.Count;
+                    for (var i = 0; i < MinCount; i++)
+                    {
+                        if (gameTree[i].isLastLevel)
+                        {
+                            gameTree[i].isLastLevel = false;
+                            var moveList = GenerateMoves(gameTree[i].maze, gameTree[i].MinPlayer);
+                            foreach (var move in moveList)
+                            {
+                                var _MinPoints = gameTree[i].MinPoints;
+                                var _symbol = gameTree[i].maze.GetSymbol(move);
+                                if (_symbol.Equals(Guide._PILL))
+                                    _MinPoints++;
+                                else if (_symbol.Equals(Guide._BONUS_PILL))
+                                    _MinPoints += 10;
+                                var gameBoard = new GameBoard
+                                {
+                                    maze = new Maze(gameTree[i].maze),
+                                    MaxPlayer = gameTree[i].MaxPlayer,
+                                    MinPlayer = move,
+                                    MaxPoints = gameTree[i].MaxPoints,
+                                    MinPoints = _MinPoints,
+                                    PrecedingBoard = gameTree[i]
+                                };
+                                gameBoard.MakeMove(move, gameTree[i].MinPlayer, Guide._PLAYER_B);
+                                gameTree.Add(gameBoard);
+                                gameTree[i].Childs.Add(gameBoard);
+                            }
+                        }
+                    }
+                }
+                depth++;
+            }
+
+            EvalGameSTate(gameTree);
+
+            //var _bestMoveUtility = AlphaBeta(gameTree[0], 100,double.NegativeInfinity,double.PositiveInfinity, true);
+            var _bestMoveUtility = MinMax(gameTree[0], 100, true);
+            foreach (var child in gameTree[0].Childs)
+            {
+                if (child.Utility.Equals(_bestMoveUtility))
+                    _nextMove = child.MaxPlayer;
+            }
+            return _nextMove;
+        }
+
+
+        private static double MinMax(GameBoard gameBoard, int depth, bool MaxPlayer)
+        {
+            if (depth == 0 || gameBoard.isLastLevel)
+                return gameBoard.Utility;
+
+            if (MaxPlayer)
+            {
+                var v = double.NegativeInfinity;
+                foreach (var child in gameBoard.Childs)
+                {
+                    var val = MinMax(child, depth - 1, false);
+                    v = Max(v, val);
+                    child.PrecedingBoard.Utility = v;
+                }
+                
+                return v;
+            }
+            else
+            {
+                var v = double.PositiveInfinity;
+                foreach (var child in gameBoard.Childs)
+                {
+                    var val = MinMax(child, depth - 1, true);
+                    v = Min(v, val);
+                    child.PrecedingBoard.Utility = v;
+                }
+                return v;
+            }
+        }
+
+        private static double AlphaBeta(GameBoard gameBoard, int depth, double a, double b, bool MaxPlayer)
+        {
+            var bestChild = new GameBoard();
+            if (depth == 0 || gameBoard.isLastLevel)
+                return gameBoard.Utility;
+
+            if (MaxPlayer)
+            {
+                foreach (var child in gameBoard.Childs)
+                {
+                    a = Max(a, AlphaBeta(child, depth - 1, a, b, false));
+                    bestChild = child;
+                    if(b <= a)
+                        break;
+                                        
+                }
+                bestChild.isBestMove = true;
+                return a;
+            }
+            else
+            {
+                foreach (var child in gameBoard.Childs)
+                {
+                    b = Min(b, AlphaBeta(child, depth - 1, a, b, true));
+                    child.Utility = b;
+                    if (b <= a)
+                        break;                    
+                }
+                return b;
+            }
+        }
+
+        
+
+
+
+
+
+
+        private static double Max(double x, double y)
+        {
+            return x > y ? x : y;
+        }
+        private static double Min(double x, double y)
+        {
+            return x < y ? x : y;
+        }
+
+        private static bool isTerminalState(List<GameBoard> gameTree)
+        {
+            foreach (var board in gameTree)
+            {
+                if (board.isLastLevel)
+                {
+                    if (!board.isTerminal())
+                        return false;
+                }
+
+            }
+            return true;
+        }
+
+        private static void EvalGameSTate(List<GameBoard> gameTree)
+        {
+            //var _gameTree = new List<GameBoard>();
+            for (var i = 0; i < gameTree.Count; i++)
+            {
+                if (gameTree[i].isLastLevel)
+                {
+                    var _utility = gameTree[i].MaxPoints - gameTree[i].MinPoints;
+                    gameTree[i].Utility = _utility;
+                    //_gameTree.Add(board);
+                }
+            }
+            //return _gameTree;
+        }
+
+        public static List<Point> GenerateMoves(Maze maze, Point currentPoint)
         {
             var nextMoves = new List<Point>();
-            if (currentPoint.Y + 1 < Guide._WIDTH
-                && !maze[currentPoint.X][currentPoint.Y + 1].Equals(Guide._WALL)
-                && !(currentPoint.X.Equals(Guide._FORBIDDEN_R_X) && currentPoint.Y.Equals(Guide._FORBIDDEN_R_Y - 1)))
-                nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
 
-            if (currentPoint.Y - 1 >= 0
-                && !maze[currentPoint.X][currentPoint.Y - 1].Equals(Guide._WALL)
-                && !(currentPoint.X.Equals(Guide._FORBIDDEN_L_X) && currentPoint.Y.Equals(Guide._FORBIDDEN_L_Y + 1)))
-                nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
-
-            if (currentPoint.X + 1 < Guide._HEIGHT
-                && !maze[currentPoint.X + 1][currentPoint.Y].Equals(Guide._WALL)
-                && !(currentPoint.X.Equals(Guide._EXIT_UP_X - 1) && currentPoint.Y.Equals(Guide._EXIT_UP_Y))
-                && !(currentPoint.X.Equals(Guide._RESPAWN_X - 1) && currentPoint.Y.Equals(Guide._RESPAWN_Y)))
+            if (currentPoint.Y + 1 < Guide._WIDTH)
             {
-                if ((currentPoint.X.Equals(Guide._RESPAWN_X) && currentPoint.Y.Equals(Guide._RESPAWN_Y))
-                    && maze[currentPoint.X + 1][currentPoint.Y].Equals(Guide._OPPONENT_SYMBOL))
+                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
+                if (!_symbol.Equals(Guide._WALL)
+                    && !(currentPoint.X.Equals(Guide._FORBIDDEN_R_X) && currentPoint.Y.Equals(Guide._FORBIDDEN_R_Y - 1)))
+                    nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
+            }
+
+            if (currentPoint.Y - 1 >= 0)
+            {
+                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
+                if (!_symbol.Equals(Guide._WALL)
+                    && !(currentPoint.X.Equals(Guide._FORBIDDEN_L_X) && currentPoint.Y.Equals(Guide._FORBIDDEN_L_Y + 1)))
+                    nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
+            }
+
+            if (currentPoint.X + 1 < Guide._HEIGHT)
+            {
+                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
+                if (!_symbol.Equals(Guide._WALL)
+                    && !(currentPoint.X.Equals(Guide._EXIT_UP_X - 1) && currentPoint.Y.Equals(Guide._EXIT_UP_Y))
+                    && !(currentPoint.X.Equals(Guide._RESPAWN_X - 1) && currentPoint.Y.Equals(Guide._RESPAWN_Y)))
                 {
-                    //do nothing          
-                }
-                else
-                {
-                    nextMoves.Add(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
+                    if ((currentPoint.X.Equals(Guide._RESPAWN_X) && currentPoint.Y.Equals(Guide._RESPAWN_Y))
+                        && _symbol.Equals(Guide._PLAYER_B))
+                    {
+                        //do nothing   
+                    }
+                    else
+                    {
+                        nextMoves.Add(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
+                    }
                 }
             }
 
-            if (currentPoint.X - 1 >= 0
-                && !maze[currentPoint.X - 1][currentPoint.Y].Equals(Guide._WALL)
-                && !(currentPoint.X.Equals(Guide._EXIT_DOWN_X + 1) && currentPoint.Y.Equals(Guide._EXIT_DOWN_Y))
-                && !(currentPoint.X.Equals(Guide._RESPAWN_X + 1) && currentPoint.Y.Equals(Guide._RESPAWN_Y)))
+
+            if (currentPoint.X - 1 >= 0)
             {
-                if ((currentPoint.X.Equals(Guide._RESPAWN_X) && currentPoint.Y.Equals(Guide._RESPAWN_Y))
-                    && maze[currentPoint.X - 1][currentPoint.Y].Equals(Guide._OPPONENT_SYMBOL))
+                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
+                if (!_symbol.Equals(Guide._WALL)
+                    && !(currentPoint.X.Equals(Guide._EXIT_DOWN_X + 1) && currentPoint.Y.Equals(Guide._EXIT_DOWN_Y))
+                    && !(currentPoint.X.Equals(Guide._RESPAWN_X + 1) && currentPoint.Y.Equals(Guide._RESPAWN_Y)))
                 {
-                    //do nothing
-                }
-                else
-                {
-                    nextMoves.Add(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
+                    if ((currentPoint.X.Equals(Guide._RESPAWN_X) && currentPoint.Y.Equals(Guide._RESPAWN_Y))
+                    && _symbol.Equals(Guide._PLAYER_B))
+                    {
+                        //do nothing
+                    }
+                    else
+                    {
+                        nextMoves.Add(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
+                    }
                 }
             }
 
@@ -61,7 +275,7 @@ namespace pacmanduelbot.helpers
             return nextMoves;
         }
 
-        public static Point ChoosePath(char[][] _maze, Point _current_position, int _depth)
+        public static Point ChoosePath(Maze _maze, Point _current_position, int _depth)
         {
             var _next = new Point();
             var _open = new List<Node>();
@@ -82,7 +296,7 @@ namespace pacmanduelbot.helpers
 
                 foreach (var _point in _tempI)
                 {
-                    var _case = _maze[_point.X][_point.Y];
+                    var _case = _maze.GetSymbol(_point.X, _point.Y);
                     if (_open_root._parent != null)
                     {
                         if (!(_point.X == _open_root._parent._position.X && _point.Y == _open_root._parent._position.Y))
@@ -190,25 +404,28 @@ namespace pacmanduelbot.helpers
             return _next;
         }
 
-        private static bool isLeaf(char[][] _maze, Point _point, Point _parent)
+        private static bool isLeaf(Maze _maze, Point _point, Point _parent)
         {
             var _isLeaf = true;
             var _list = GenerateMoves(_maze, _point);
 
             foreach (var _item in _list)
             {
-                if (!(_item.X == _parent.X && _item.Y == _parent.Y)
-                    && (_maze[_item.X][_item.Y].Equals(Guide._BONUS_PILL)
-                    || _maze[_item.X][_item.Y].Equals(Guide._PILL)))
+                if (!(_item.X == _parent.X && _item.Y == _parent.Y))
                 {
-                    _isLeaf = false;
-                    break;
+                    var _symbol = _maze.GetSymbol(_item.X,_item.Y);
+                    if(_symbol.Equals(Guide._BONUS_PILL)
+                    || _symbol.Equals(Guide._PILL))
+                    {
+                        _isLeaf = false;
+                        break;
+                    }
                 }
             }
             return _isLeaf;
         }
 
-        public static List<Point> BuildPath(char[][] _maze, Point _start, Point _target)
+        public static List<Point> BuildPath(Maze _maze, Point _start, Point _target)
         {
             var _list = new List<Point>();
             var _open = new List<Node>();
@@ -253,13 +470,13 @@ namespace pacmanduelbot.helpers
                 {
                     g = _current._g + 1;
                     h = Mappings.ManhattanDistance(_neighbor, _target);
-                    f = Mappings.CalculateWeight(g, h); 
+                    f = Mappings.CalculateWeight(g, h);
                     _curr = new Node
                     {
                         _position = _neighbor,
                         _g = g,
-                        _h = h, 
-                        _f = f, 
+                        _h = h,
+                        _f = f,
                         _parent = _current
                     };
                     if (!_closed.Contains(_curr))

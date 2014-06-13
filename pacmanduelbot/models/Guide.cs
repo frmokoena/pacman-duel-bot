@@ -28,12 +28,13 @@ namespace pacmanduelbot.models
         public const int _EXIT_DOWN_Y = 9;
 
         //Maze symbols
-        public const char _PLAYER_SYMBOL = 'A';
-        public const char _OPPONENT_SYMBOL = 'B';
+        public const char _PLAYER_A = 'A';
+        public const char _PLAYER_B = 'B';
+        public const char _WALL = '#';
         public const char _PILL = '.';
         public const char _BONUS_PILL = '*';
+        public const char _EMPTY = ' ';
         public const char _POISON_PILL = '!';
-        public const char _WALL = '#';
         public const int _PILLS = 183;
         
         //tunnel
