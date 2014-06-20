@@ -46,16 +46,27 @@
     <Compile Include="Exceptions\UnreadableMazeException.cs" />
     <Compile Include="helpers\Moves.cs" />
     <Compile Include="models\GameBoard.cs" />
-    <Compile Include="models\Guide.cs" />
     <Compile Include="models\Maze.cs" />
-    <Compile Include="models\Node.cs" />
+    <Compile Include="models\PathFinderNode.cs" />
     <Compile Include="models\PoisonInventory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="shared\Mappings.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="shared\Symbols.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="store\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
