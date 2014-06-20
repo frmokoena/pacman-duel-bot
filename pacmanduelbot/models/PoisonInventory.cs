@@ -11,7 +11,7 @@ namespace pacmanduelbot.models
         //public static readonly string _poisonfilepath = ".." + System.IO.Path.DirectorySeparatorChar + ".."
         //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
         //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "POISON_PILL.csv";
-        public static bool arePoisonPillsExhausted()
+        public static bool ArePoisonPillsExhausted()
         {
             int _NUMBER_OF_POISON_PILLS;
             var result = false;
@@ -41,7 +41,7 @@ namespace pacmanduelbot.models
             return result;
         }
 
-        public static bool isSelfRespawn()
+        public static bool IsSelfRespawn()
         {
             int _RESPAWN_NEEDED;
             var result = false;

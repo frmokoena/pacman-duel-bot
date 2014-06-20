@@ -1,8 +1,6 @@
-﻿using System;
+﻿using pacmanduelbot.shared;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace pacmanduelbot.models
 {
@@ -21,12 +19,12 @@ namespace pacmanduelbot.models
         public bool isBestMove { get; set; }
         public bool isTerminal()
         {
-            for (var x = 0; x < Guide._HEIGHT; x++)
+            for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
             {
-                for (var y = 0; y < Guide._WIDTH; y++)
+                for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
                 {
                     var _symbol = maze.GetSymbol(new Point { X = x, Y = y });
-                    if (_symbol.Equals(Guide._PILL) || _symbol.Equals(Guide._BONUS_PILL))
+                    if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
                         return false;
                 }
             }
@@ -35,7 +33,7 @@ namespace pacmanduelbot.models
 
         public void MakeMove(Point move, Point currentPoint, char PlayerSymbol)
         {
-            maze.SetSymbol(currentPoint.X, currentPoint.Y, Guide._EMPTY);
+            maze.SetSymbol(currentPoint.X, currentPoint.Y, Symbols._EMPTY);
             maze.SetSymbol(move.X, move.Y, PlayerSymbol);
         }
     }

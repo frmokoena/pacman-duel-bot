@@ -12,21 +12,21 @@ namespace pacmanduelbot.models
         {
             try
             {
-                _map = new char[Guide._HEIGHT][];
+                _map = new char[Properties.Settings.Default._MazeHeight][];
                 var fileLines = System.IO.File.ReadAllLines(filePath);
-                if (fileLines.Length != Guide._HEIGHT)
+                if (fileLines.Length != Properties.Settings.Default._MazeHeight)
                 {
-                    throw new UnreadableMazeException("File should be " + Guide._HEIGHT
+                    throw new UnreadableMazeException("File should be " + Properties.Settings.Default._MazeHeight
                         + " lines, but is " + fileLines.Length + " lines");
                 }
                 var rowCount = 0;
                 foreach (var row in fileLines)
                 {
                     _map[rowCount] = row.ToCharArray();
-                    if (_map[rowCount].Length != Guide._WIDTH)
+                    if (_map[rowCount].Length != Properties.Settings.Default._MazeWidth)
                     {
                         throw new UnreadableMazeException("Line " + (rowCount + 1) + " is " + _map[rowCount].Length
-                            + " characters wide, but should be " + Guide._WIDTH);
+                            + " characters wide, but should be " + Properties.Settings.Default._MazeWidth);
                     }
                     rowCount++;
                 }
@@ -39,11 +39,11 @@ namespace pacmanduelbot.models
 
         public Maze(Maze maze)
         {
-            _map = new char[Guide._HEIGHT][];
-            for (var x = 0; x < Guide._HEIGHT; x++)
+            _map = new char[Properties.Settings.Default._MazeHeight][];
+            for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
             {
-                var row = new char[Guide._WIDTH];
-                for (var y = 0; y < Guide._WIDTH; y++)
+                var row = new char[Properties.Settings.Default._MazeWidth];
+                for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
                 {
                     row[y] = maze.GetSymbol(x, y);
                 }
@@ -58,8 +58,6 @@ namespace pacmanduelbot.models
 
         public char GetSymbol(Point p)
         {
-            /*if (p.X < 0 || p.Y < 0 || p.X >= Properties.Settings.Default.MazeHeight || p.Y >= Properties.Settings.Default.MazeWidth)
-                return 'B'; // Border*/
             return _map[p.X][p.Y];
         }
 
@@ -68,32 +66,11 @@ namespace pacmanduelbot.models
             _map[x][y] = symbol;
         }
 
-        public String ToFlatFormatString()
-        {
-            var result = "";
-            for (var x = 0; x < Guide._HEIGHT; x++)
-            {
-                for (var y = 0; y < Guide._WIDTH; y++)
-                {
-                    result += _map[x][y];
-                }
-                if (x != Guide._HEIGHT - 1)
-                    result += '\n';
-            }
-            return result;
-        }
-
-
-        public void Print()
-        {
-            Console.Out.WriteLine(ToFlatFormatString());
-        }
-
         public Point FindCoordinateOf(char symbol)
         {
-            for (var x = 0; x < Guide._HEIGHT; x++)
+            for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
             {
-                for (var y = 0; y < Guide._WIDTH; y++)
+                for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
                 {
                     if (_map[x][y] == symbol)
                     {
@@ -109,18 +86,17 @@ namespace pacmanduelbot.models
             using (var file = new System.IO.StreamWriter(filePath))
             {
                 var output = "";
-                for (var x = 0; x < Guide._HEIGHT; x++)
+                for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
                 {
-                    for (var y = 0; y < Guide._WIDTH; y++)
+                    for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
                     {
                         output += _map[x][y];
                     }
-                    if (x != Guide._HEIGHT - 1) output += ('\n');
+                    if (x != Properties.Settings.Default._MazeHeight - 1) output += ('\n');
                 }
                 file.Write(output);
                 file.Close();
             }
         }
-
     }
 }
