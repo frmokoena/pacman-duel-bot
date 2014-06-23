@@ -103,7 +103,7 @@ namespace pacmanduelbot.helpers
             return _result;
         }
 
-        public static Point PathDecision(Maze _maze, Point _current_position)
+        public static Point PathSelect(Maze _maze, Point _current_position)
         {
             var _open = new List<PathFinderNode>
             {
