@@ -17,14 +17,14 @@ namespace pacmanduelbot.brainbox
             {
                 var _next_position = BotMove();
 
-                //if (SelfRespawnNeeded())
-                  //  return SelfRespawn(_next_position);
+                if (SelfRespawnNeeded())
+                    return SelfRespawn(_next_position);
 
-                //if (_DROP_PILL)
-                return MakeMoveAndDropPill(_next_position);
+                if (_DROP_PILL)
+                    return MakeMoveAndDropPill(_next_position);
 
-                //_maze.SetSymbol(_CURRENT_POSITION.X,_CURRENT_POSITION.Y,Symbols._EMPTY);
-                //_maze.SetSymbol(_next_position.X,_next_position.Y,Symbols._PLAYER_A);
+                _maze.SetSymbol(_CURRENT_POSITION.X, _CURRENT_POSITION.Y, Symbols._EMPTY);
+                _maze.SetSymbol(_next_position.X, _next_position.Y, Symbols._PLAYER_A);
             }
             return _maze;
         }
@@ -44,7 +44,7 @@ namespace pacmanduelbot.brainbox
             var list = Moves.GenerateMoves(_maze, _CURRENT_POSITION);
             foreach (var _point in list)
             {
-                var _symbol = _maze.GetSymbol(_point.X,_point.Y);
+                var _symbol = _maze.GetSymbol(_point);
                 if (_symbol.Equals(Symbols._POISON_PILL))
                 {
                     _next = _point;
@@ -72,7 +72,7 @@ namespace pacmanduelbot.brainbox
             var list = new List<Point>();
             var _next = FindNearbyPill();
             
-            var _symbol = _maze.GetSymbol(_next.X, _next.Y);
+            var _symbol = _maze.GetSymbol(_next);
             if (_symbol.Equals(Symbols._BONUS_PILL))
             {
                 _move = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _next);
@@ -87,7 +87,7 @@ namespace pacmanduelbot.brainbox
 
             foreach (var _point in possibleMoveList)
             {
-                _symbol = _maze.GetSymbol(_point.X,_point.Y);
+                _symbol = _maze.GetSymbol(_point);
                 if (_symbol.Equals(Symbols._PILL))
                 {
                     list.Add(_point);
@@ -115,7 +115,8 @@ namespace pacmanduelbot.brainbox
                 case 1:
                     return list[0];
                 default:
-                    return Moves.ChoosePath(_maze, _CURRENT_POSITION, 100);
+                    return Moves.PathDecision(_maze, _CURRENT_POSITION);
+                    //return Moves.ChoosePath(_maze, _CURRENT_POSITION, 100);
             }
         }
 
@@ -154,7 +155,7 @@ namespace pacmanduelbot.brainbox
                     _closed.Add(_open[0]);
                     foreach (var _point in _templist)
                     {
-                        var _symbol = _maze.GetSymbol(_point.X, _point.Y);
+                        var _symbol = _maze.GetSymbol(_point);
                         if (_symbol.Equals(Symbols._BONUS_PILL)
                             || _symbol.Equals(Symbols._PILL))
                         {
@@ -179,7 +180,7 @@ namespace pacmanduelbot.brainbox
                     _closed.Add(_open[0]);
                     foreach (var _point in _templist)
                     {
-                        var _symbol = _maze.GetSymbol(_point.X, _point.Y);
+                        var _symbol = _maze.GetSymbol(_point);
                         if (_symbol.Equals(Symbols._BONUS_PILL)
                             || _symbol.Equals(Symbols._PILL))
                         {
@@ -201,7 +202,7 @@ namespace pacmanduelbot.brainbox
                 _closed.Add(_open[0]);
                 foreach (var _point in _templist)
                 {
-                    var _symbol = _maze.GetSymbol(_point.X, _point.Y);
+                    var _symbol = _maze.GetSymbol(_point);
                     if (_symbol.Equals(Symbols._BONUS_PILL)
                         || _symbol.Equals(Symbols._PILL))
                     {

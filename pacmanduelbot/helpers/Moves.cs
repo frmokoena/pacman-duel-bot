@@ -12,7 +12,7 @@ namespace pacmanduelbot.helpers
         {
             var _next_list = new List<Point>();
             var _closedset = new List<PathFinderNode>();
-            var h_score = Math.Abs(_start.X - _destination.X) + Math.Abs(_start.Y - _destination.Y);            
+            var h_score = Math.Abs(_start.X - _destination.X) + Math.Abs(_start.Y - _destination.Y);
             var _openset = new List<PathFinderNode>
             {
                 new PathFinderNode
@@ -23,7 +23,7 @@ namespace pacmanduelbot.helpers
                     _f_score = h_score
                 }
             };
-            
+
             while (!(_openset.Count == 0))
             {
                 var _current = FindLowFScore(_openset);
@@ -78,10 +78,6 @@ namespace pacmanduelbot.helpers
                 return _current_node;
             else
                 return ReconstructPath(_current_node._parent, _closedset);
-
-            //while (_current_node._parent != _closedset[0])
-            //  _current_node = _current_node._parent;
-            //return _current_node;
         }
 
         private static PathFinderNode FindNeighborInOpenSet(List<PathFinderNode> _openset, Point neighbor)
@@ -107,61 +103,27 @@ namespace pacmanduelbot.helpers
             return _result;
         }
 
-        public static Point ChoosePath(Maze _maze, Point _current_position, int _depth)
+        public static Point PathDecision(Maze _maze, Point _current_position)
         {
-            var _next = new Point();
-            var _open = new List<PathFinderNode>();
+            var _open = new List<PathFinderNode>
+            {
+                new PathFinderNode{_position = _current_position}
+            };
             var _closed = new List<PathFinderNode>();
 
-            var _node = new PathFinderNode { _position = _current_position };
-
-            _open.Add(_node);
-
-            var _count = 0;
-
-            while (_open.Count != 0 && _count < _depth)
+            while (_open.Count != 0)
             {
                 var _open_root = _open[0];
                 _closed.Add(_open_root);
+                _open.Remove(_open_root);
 
-                var _tempI = GenerateMoves(_maze, _open_root._position);
+                var _neighbors = GenerateMoves(_maze, _open_root._position);
 
-                foreach (var _point in _tempI)
+                foreach (var _point in _neighbors)
                 {
-                    var _case = _maze.GetSymbol(_point.X, _point.Y);
-                    if (_open_root._parent != null)
+                    if (!isExplored(_open_root, _point))
                     {
-                        if (!(_point.X == _open_root._parent._position.X && _point.Y == _open_root._parent._position.Y))
-                        {
-                            switch (_case)
-                            {
-                                case '.':
-                                    var _path_node = new PathFinderNode
-                                    {
-                                        _position = _point,
-                                        _score = _open_root._score + 1,
-                                        _isLeaf = isLeaf(_maze, _point, _open_root._position),
-                                        _parent = _open_root
-                                    };
-                                    _open.Add(_path_node);
-                                    break;
-                                case '*':
-                                    _path_node = new PathFinderNode
-                                    {
-                                        _position = _point,
-                                        _score = _open_root._score + 10,
-                                        _isLeaf = isLeaf(_maze, _point, _open_root._position),
-                                        _parent = _open_root
-                                    };
-                                    _open.Add(_path_node);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                    else
-                    {
+                        var _case = _maze.GetSymbol(_point);
                         switch (_case)
                         {
                             case '.':
@@ -169,7 +131,7 @@ namespace pacmanduelbot.helpers
                                 {
                                     _position = _point,
                                     _score = _open_root._score + 1,
-                                    _isLeaf = isLeaf(_maze, _point, _open_root._position),
+                                    _isLeaf = isLeaf(_maze,_open_root, _point),
                                     _parent = _open_root
                                 };
                                 _open.Add(_path_node);
@@ -179,7 +141,7 @@ namespace pacmanduelbot.helpers
                                 {
                                     _position = _point,
                                     _score = _open_root._score + 10,
-                                    _isLeaf = isLeaf(_maze, _point, _open_root._position),
+                                    _isLeaf = isLeaf(_maze, _open_root, _point),
                                     _parent = _open_root
                                 };
                                 _open.Add(_path_node);
@@ -189,36 +151,28 @@ namespace pacmanduelbot.helpers
                         }
                     }
                 }
-                _open.Remove(_open_root);
-                _count++;
             }
 
             var curr = new PathFinderNode();
-            var _closed_root = _closed[0];
-
-            if (!(_open.Count == 0))
-            {
-                foreach (var _item in _closed)
-                {
-                    if (_item._score > curr._score)
-                    {
-                        curr = _item;
-                    }
-                }
-                while (!(curr._parent._position.X == _closed_root._position.X && curr._parent._position.Y == _closed_root._position.Y))
-                    curr = curr._parent;
-                _next = curr._position;
-                return _next;
-            }
-
+            
             foreach (var _item in _closed)
             {
                 if (_item._isLeaf)
                 {
                     if (_item._score == 1)
                     {
-                        _next = _item._position;
-                        return _next;
+                        var isViable = true;
+                        var _interritory = GenerateMoves(_maze, _item._position);
+                        foreach(var point in _interritory)
+                        {
+                            var _symbol = _maze.GetSymbol(point);
+                            if(_symbol == Symbols._PLAYER_B)
+                            {
+                                isViable = false;
+                            }
+                        }
+                        if(isViable)
+                            return _item._position;
                     }
                     else
                     {
@@ -230,32 +184,36 @@ namespace pacmanduelbot.helpers
                 }
             }
 
-            while (!(curr._parent._position.X == _closed_root._position.X && curr._parent._position.Y == _closed_root._position.Y))
-                curr = curr._parent;
-            _next = curr._position;
-            return _next;
+            var _next_node = ReconstructPath(curr, _closed);
+
+            return _next_node._position;
         }
 
-        private static bool isLeaf(Maze _maze, Point _point, Point _parent)
+        private static bool isLeaf(Maze maze, PathFinderNode parent, Point point)
         {
-            var _isLeaf = true;
-            var _list = GenerateMoves(_maze, _point);
-
+            var _list = GenerateMoves(maze, point);
             foreach (var _item in _list)
             {
-                if (!(_item.X == _parent.X && _item.Y == _parent.Y))
+                if(!isExplored(new PathFinderNode { _position = point, _parent = parent }, _item))
                 {
-                    var _symbol = _maze.GetSymbol(_item.X, _item.Y);
-                    if (_symbol.Equals(Symbols._BONUS_PILL)
-                    || _symbol.Equals(Symbols._PILL))
-                    {
-                        _isLeaf = false;
-                        break;
-                    }
-                }
+                    var _symbol = maze.GetSymbol(_item);
+                    if (_symbol.Equals(Symbols._BONUS_PILL) || _symbol.Equals(Symbols._PILL))
+                        return false;
+                }              
             }
-            return _isLeaf;
+            return true;
         }
+
+        static bool isExplored(PathFinderNode parent, Point point)
+        {
+            while (!(parent == null))
+            {
+                if (point == parent._position)
+                    return true;
+                parent = parent._parent;
+            }
+            return false;
+        }    
 
         public static List<Point> GenerateMoves(Maze maze, Point currentPoint)
         {
@@ -263,7 +221,7 @@ namespace pacmanduelbot.helpers
 
             if (currentPoint.Y + 1 < Properties.Settings.Default._MazeWidth)
             {
-                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
+                var _symbol = maze.GetSymbol(currentPoint.X, currentPoint.Y + 1);
                 if (!_symbol.Equals(Symbols._WALL)
                     && !(currentPoint.X.Equals(Properties.Settings.Default._MazeForbiddenRX) && currentPoint.Y.Equals(Properties.Settings.Default._MazeForbiddenRY - 1)))
                     nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
@@ -271,7 +229,7 @@ namespace pacmanduelbot.helpers
 
             if (currentPoint.Y - 1 >= 0)
             {
-                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
+                var _symbol = maze.GetSymbol(currentPoint.X, currentPoint.Y - 1);
                 if (!_symbol.Equals(Symbols._WALL)
                     && !(currentPoint.X.Equals(Properties.Settings.Default._MazeForbiddenLX) && currentPoint.Y.Equals(Properties.Settings.Default._MazeForbiddenLY + 1)))
                     nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
@@ -279,7 +237,7 @@ namespace pacmanduelbot.helpers
 
             if (currentPoint.X + 1 < Properties.Settings.Default._MazeHeight)
             {
-                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
+                var _symbol = maze.GetSymbol(currentPoint.X + 1, currentPoint.Y);
                 if (!_symbol.Equals(Symbols._WALL)
                     && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnExitUpX - 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnExitUpY))
                     && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnX - 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnY)))
@@ -299,7 +257,7 @@ namespace pacmanduelbot.helpers
 
             if (currentPoint.X - 1 >= 0)
             {
-                var _symbol = maze.GetSymbol(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
+                var _symbol = maze.GetSymbol(currentPoint.X - 1, currentPoint.Y);
                 if (!_symbol.Equals(Symbols._WALL)
                     && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnExitDownX + 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnExitDownY))
                     && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnX + 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnY)))
@@ -325,7 +283,8 @@ namespace pacmanduelbot.helpers
             return nextMoves;
         }
 
-        
+
+
 
         /*
         public static Point MinMaxDecision(Maze _maze, Point MaxPosition, Point MinPosition)
