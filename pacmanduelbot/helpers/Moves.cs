@@ -103,15 +103,16 @@ namespace pacmanduelbot.helpers
             return _result;
         }
 
-        public static Point PathSelect(Maze _maze, Point _current_position)
+        public static Point PathSelect(Maze _maze, Point _current_position, int depth)
         {
             var _open = new List<PathFinderNode>
             {
                 new PathFinderNode{_position = _current_position}
             };
             var _closed = new List<PathFinderNode>();
-
-            while (_open.Count != 0)
+            var _depth = 0;
+            var startTime = DateTime.Now;
+            while (_open.Count != 0 && _depth < depth)
             {
                 var _open_root = _open[0];
                 _closed.Add(_open_root);
@@ -151,42 +152,32 @@ namespace pacmanduelbot.helpers
                         }
                     }
                 }
+                _depth++;
+            }
+            var finishTime = DateTime.Now;
+            var curr = new PathFinderNode();
+
+            if(_open.Count != 0)
+            {
+                foreach(var _item in _closed)
+                {
+                    if (_item._score > curr._score)
+                        curr = _item;
+                }
+
+                var exit1Time = DateTime.Now;
+                return ReconstructPath(curr, _closed)._position;
             }
 
-            var curr = new PathFinderNode();
             
             foreach (var _item in _closed)
             {
                 if (_item._isLeaf)
-                {
-                    if (_item._score == 1)
-                    {
-                        var isViable = true;
-                        var _interritory = GenerateMoves(_maze, _item._position);
-                        foreach(var point in _interritory)
-                        {
-                            var _symbol = _maze.GetSymbol(point);
-                            if(_symbol == Symbols._PLAYER_B)
-                            {
-                                isViable = false;
-                            }
-                        }
-                        if(isViable)
-                            return _item._position;
-                    }
-                    else
-                    {
-                        if (_item._score > curr._score)
-                        {
-                            curr = _item;
-                        }
-                    }
-                }
+                    if (_item._score > curr._score)
+                        curr = _item;
             }
-
-            var _next_node = ReconstructPath(curr, _closed);
-
-            return _next_node._position;
+            var exit2Time = DateTime.Now;
+            return ReconstructPath(curr, _closed)._position;
         }
 
         private static bool isLeaf(Maze maze, PathFinderNode parent, Point point)
@@ -219,72 +210,102 @@ namespace pacmanduelbot.helpers
         {
             var nextMoves = new List<Point>();
 
-            if (currentPoint.Y + 1 < Properties.Settings.Default._MazeWidth)
+            if (IsValidPoint(new Point { X = currentPoint.X, Y = currentPoint.Y + 1}))
             {
-                var _symbol = maze.GetSymbol(currentPoint.X, currentPoint.Y + 1);
-                if (!_symbol.Equals(Symbols._WALL)
-                    && !(currentPoint.X.Equals(Properties.Settings.Default._MazeForbiddenRX) && currentPoint.Y.Equals(Properties.Settings.Default._MazeForbiddenRY - 1)))
-                    nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 });
+                var point = new Point{X = currentPoint.X,Y=currentPoint.Y + 1};
+                if (!IsWall(maze, point) && !IsRespawnZoneRight(point))
+                    nextMoves.Add(point);
             }
 
-            if (currentPoint.Y - 1 >= 0)
+            if (IsValidPoint(new Point { X = currentPoint.X, Y = currentPoint.Y - 1}))
             {
-                var _symbol = maze.GetSymbol(currentPoint.X, currentPoint.Y - 1);
-                if (!_symbol.Equals(Symbols._WALL)
-                    && !(currentPoint.X.Equals(Properties.Settings.Default._MazeForbiddenLX) && currentPoint.Y.Equals(Properties.Settings.Default._MazeForbiddenLY + 1)))
-                    nextMoves.Add(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 });
+                var point = new Point{X = currentPoint.X, Y = currentPoint.Y - 1};
+                if (!IsWall(maze, point) && !IsRespawnZoneLeft(point))
+                    nextMoves.Add(point);
+
             }
 
-            if (currentPoint.X + 1 < Properties.Settings.Default._MazeHeight)
+            if (IsValidPoint(new Point { X = currentPoint.X + 1, Y = currentPoint.Y}))
             {
-                var _symbol = maze.GetSymbol(currentPoint.X + 1, currentPoint.Y);
-                if (!_symbol.Equals(Symbols._WALL)
-                    && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnExitUpX - 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnExitUpY))
-                    && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnX - 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnY)))
+                var point = new Point{X = currentPoint.X + 1, Y = currentPoint.Y};
+                if(!IsWall(maze, point) && !IsRespawnZoneExitUP(point) && !IsRespawnZone(point))
                 {
-                    if ((currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnX) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnY))
-                        && _symbol.Equals(Symbols._PLAYER_B))
-                    {
-                        //do nothing   
-                    }
-                    else
-                    {
+                    if (!(IsRespawnZone(currentPoint) && maze.GetSymbol(currentPoint.X + 1, currentPoint.Y).Equals(Symbols._PLAYER_B)))
                         nextMoves.Add(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
-                    }
                 }
             }
-
-
-            if (currentPoint.X - 1 >= 0)
+            
+            if (IsValidPoint(new Point { X = currentPoint.X - 1, Y = currentPoint.Y}))
             {
-                var _symbol = maze.GetSymbol(currentPoint.X - 1, currentPoint.Y);
-                if (!_symbol.Equals(Symbols._WALL)
-                    && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnExitDownX + 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnExitDownY))
-                    && !(currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnX + 1) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnY)))
+                var point = new Point { X = currentPoint.X - 1, Y = currentPoint.Y };
+                if (!IsWall(maze, point) && !IsRespawnZoneExitDown(point) && !IsRespawnZone(point))
                 {
-                    if ((currentPoint.X.Equals(Properties.Settings.Default._MazeRespawnX) && currentPoint.Y.Equals(Properties.Settings.Default._MazeRespawnY))
-                    && _symbol.Equals(Symbols._PLAYER_B))
-                    {
-                        //do nothing
-                    }
-                    else
-                    {
+                    if(!(IsRespawnZone(currentPoint) && maze.GetSymbol(currentPoint.X - 1, currentPoint.Y).Equals(Symbols._PLAYER_B)))
                         nextMoves.Add(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
-                    }
                 }
             }
-
-            if (currentPoint.X.Equals(Properties.Settings.Default._MazePortal1X) && currentPoint.Y.Equals(Properties.Settings.Default._MazePortal1Y))
+            
+            if (IsPortalLeft(currentPoint))
                 nextMoves.Add(new Point { X = Properties.Settings.Default._MazePortal2X, Y = Properties.Settings.Default._MazePortal2Y });
 
-            if (currentPoint.X.Equals(Properties.Settings.Default._MazePortal2X) && currentPoint.Y.Equals(Properties.Settings.Default._MazePortal2Y))
+            if (IsPortalRight(currentPoint))
                 nextMoves.Add(new Point { X = Properties.Settings.Default._MazePortal1X, Y = Properties.Settings.Default._MazePortal1Y });
 
             return nextMoves;
         }
 
+        static bool IsRespawnZone(Point p)
+        {
+            return (p.X == Properties.Settings.Default._MazeRespawnX) 
+                && (p.Y == Properties.Settings.Default._MazeRespawnY); 
+        }
 
+        static bool IsRespawnZoneExitUP(Point p)
+        {
+            return (p.X == Properties.Settings.Default._MazeRespawnExitUpX) 
+                && (p.Y == Properties.Settings.Default._MazeRespawnExitUpY);
+        }
 
+        static bool IsRespawnZoneExitDown(Point p)
+        {
+            return (p.X == Properties.Settings.Default._MazeRespawnExitDownX)
+                && (p.Y == Properties.Settings.Default._MazeRespawnExitDownY);
+        }
+
+        static bool IsRespawnZoneLeft(Point p)
+        {
+            return (p.X == Properties.Settings.Default._MazeForbiddenLX)
+                && (p.Y == Properties.Settings.Default._MazeForbiddenLY);
+        }
+
+        static bool IsRespawnZoneRight(Point p)
+        {
+            return (p.X == Properties.Settings.Default._MazeForbiddenRX)
+                && (p.Y == Properties.Settings.Default._MazeForbiddenRY);
+        }
+
+        static bool IsWall(Maze _maze, Point p)
+        {
+            return (_maze.GetSymbol(p) == Symbols._WALL);
+        }
+
+        static bool IsValidPoint(Point p)
+        {
+            return (p.X >= 0 && p.X < Properties.Settings.Default._MazeHeight)
+                && (p.Y >= 0 && p.Y < Properties.Settings.Default._MazeWidth);
+        }
+
+        static bool IsPortalLeft(Point point)
+        {
+            return (point.X == Properties.Settings.Default._MazePortal1X)
+                && (point.Y == Properties.Settings.Default._MazePortal1Y);
+        }
+
+        static bool IsPortalRight(Point point)
+        {
+            return (point.X == Properties.Settings.Default._MazePortal2X)
+                && (point.Y == Properties.Settings.Default._MazePortal2Y);
+        }
 
         /*
         public static Point MinMaxDecision(Maze _maze, Point MaxPosition, Point MinPosition)
