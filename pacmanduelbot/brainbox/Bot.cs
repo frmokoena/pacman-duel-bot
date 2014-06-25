@@ -1,6 +1,7 @@
 ﻿using pacmanduelbot.helpers;
 using pacmanduelbot.models;
 using pacmanduelbot.shared;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -118,10 +119,12 @@ namespace pacmanduelbot.brainbox
         private Point FindNearbyPill()
         {
             var _next = new Point();
-            var _open = new List<Point>();
+            var _open = new List<Point>
+            {
+                _CURRENT_POSITION
+            };
             var _closed = new List<Point>();
-
-            _open.Add(_CURRENT_POSITION);
+            var _explored = new List<Point>();
 
             for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
             {
@@ -153,9 +156,8 @@ namespace pacmanduelbot.brainbox
                         if (_symbol.Equals(Symbols._BONUS_PILL)
                             || _symbol.Equals(Symbols._PILL))
                         {
-                            _next = _point;
-                            if (_next.X > Properties.Settings.Default._MazeTunnel)
-                                return _next;
+                            if (_point.X > Properties.Settings.Default._MazeTunnel)
+                                return _point;
                         }
                         if (!_closed.Contains(_point))
                             _open.Add(_point);
@@ -178,9 +180,8 @@ namespace pacmanduelbot.brainbox
                         if (_symbol.Equals(Symbols._BONUS_PILL)
                             || _symbol.Equals(Symbols._PILL))
                         {
-                            _next = _point;
-                            if (_next.X <= Properties.Settings.Default._MazeTunnel)
-                                return _next;
+                            if (_point.X <= Properties.Settings.Default._MazeTunnel)
+                                return _point;
                         }
                         if (!_closed.Contains(_point))
                             _open.Add(_point);
@@ -190,24 +191,58 @@ namespace pacmanduelbot.brainbox
             }
 
             //Otherwise
+            var _opp_pos = _OPPONENT_POSITION;
             while (_open.Count != 0)
             {
-                var _templist = Moves.GenerateMoves(_maze, _open[0]);
                 _closed.Add(_open[0]);
+                var _templist = Moves.GenerateMoves(_maze, _open[0]);                
                 foreach (var _point in _templist)
                 {
-                    var _symbol = _maze.GetSymbol(_point);
-                    if (_symbol.Equals(Symbols._BONUS_PILL)
-                        || _symbol.Equals(Symbols._PILL))
+                    if(!_explored.Contains(_point))
                     {
-                        _next = _point;
-                        return _next;
+                        if (_maze.GetSymbol(_point).Equals(Symbols._PILL))
+                        {
+                            //TODO:                        
+                            if (!_OPPONENT_POSITION.IsEmpty)
+                            {
+                                var _hiscost = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _point);
+                                var _hercost = Moves.FindPathToPill(_maze, _opp_pos, _point);
+                                if (_hiscost[0].X <= _hercost[0].X)
+                                    return _point;
+                                _opp_pos = _hercost[1];
+                            }
+                            else
+                            {
+                                return _point;
+                            }
+                        }
+                        _explored.Add(_point);
                     }
                     if (!_closed.Contains(_point))
                         _open.Add(_point);
                 }
                 _open.Remove(_open[0]);
             }
+
+            _open.Clear(); _open.Add(_CURRENT_POSITION);
+            _closed.Clear(); _explored.Clear();
+            while (_open.Count != 0)
+            {
+                _closed.Add(_open[0]);
+                var _templist = Moves.GenerateMoves(_maze, _open[0]);
+                foreach (var _point in _templist)
+                {
+                    if (!_explored.Contains(_point))
+                    {
+                        if (_maze.GetSymbol(_point).Equals(Symbols._PILL))
+                            return _point;
+                        _explored.Add(_point);
+                    }
+                    if (!_closed.Contains(_point))
+                        _open.Add(_point);
+                }
+                _open.Remove(_open[0]);
+            }            
             return _next;
         }
 
