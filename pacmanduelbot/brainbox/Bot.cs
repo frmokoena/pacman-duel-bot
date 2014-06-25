@@ -111,7 +111,7 @@ namespace pacmanduelbot.brainbox
                 case 1:
                     return list[0];
                 default:
-                    return Moves.PathSelect(_maze, _CURRENT_POSITION,10000);
+                    return Moves.PathSelect(_maze, _CURRENT_POSITION,1000);
             }
         }
 
@@ -166,7 +166,7 @@ namespace pacmanduelbot.brainbox
 
             //else
             if (_CURRENT_POSITION.X > Properties.Settings.Default._MazeTunnel
-                && _UPPER_PILL_COUNT > _LOWER_PILL_COUNT + 10)
+                && _UPPER_PILL_COUNT > _LOWER_PILL_COUNT + 15)
             {
                 while (_open.Count != 0)
                 {
