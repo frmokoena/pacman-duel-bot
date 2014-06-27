@@ -29,9 +29,8 @@ namespace pacmanduelbot.models
             {
                 Console.Write(e.ToString());
             }
-
-            bool parsed = Int32.TryParse(_CONTENTS[0], out _NUMBER_OF_POISON_PILLS);
-            return parsed && _NUMBER_OF_POISON_PILLS < 1;
+            bool parsed = Int32.TryParse(_CONTENTS[0], out _NUMBER_OF_POISON_PILLS);            
+            return !parsed || _NUMBER_OF_POISON_PILLS < 1;
         }
 
         public static bool IsSelfRespawn()
@@ -53,7 +52,7 @@ namespace pacmanduelbot.models
                 Console.Write(e.ToString());
             }
             bool parsed = Int32.TryParse(_CONTENTS[1], out _RESPAWN_NEEDED);
-            return parsed && _RESPAWN_NEEDED > 0;
+            return !parsed || _RESPAWN_NEEDED > 0;
         }
 
         public static void FillUpPoisonInventory()

@@ -141,29 +141,30 @@ namespace pacmanduelbot.brainbox
                 }
             }
 
-            //TODO: some intelligence
+            //TODO: some intelligence ==> need some re-do
             //if
             if (_CURRENT_POSITION.X <= Properties.Settings.Default._MazeTunnel
                 && _LOWER_PILL_COUNT > _UPPER_PILL_COUNT + 15)
             {
                 while (_open.Count != 0)
                 {
-                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     _closed.Add(_open[0]);
+                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     foreach (var _point in _templist)
                     {
-                        var _symbol = _maze.GetSymbol(_point);
-                        if (_symbol.Equals(Symbols._BONUS_PILL)
-                            || _symbol.Equals(Symbols._PILL))
+                        if (!_explored.Contains(_point))
                         {
-                            if (_point.X > Properties.Settings.Default._MazeTunnel)
-                                return _point;
+                            var _symbol = _maze.GetSymbol(_point);
+                            if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
+                                if (_point.X > Properties.Settings.Default._MazeTunnel)
+                                    return _point;
+                            _explored.Add(_point);
                         }
                         if (!_closed.Contains(_point))
                             _open.Add(_point);
                     }
                     _open.Remove(_open[0]);
-                }
+                } 
             }
 
             //else
@@ -172,16 +173,17 @@ namespace pacmanduelbot.brainbox
             {
                 while (_open.Count != 0)
                 {
-                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     _closed.Add(_open[0]);
+                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     foreach (var _point in _templist)
                     {
-                        var _symbol = _maze.GetSymbol(_point);
-                        if (_symbol.Equals(Symbols._BONUS_PILL)
-                            || _symbol.Equals(Symbols._PILL))
+                        if (!_explored.Contains(_point))
                         {
-                            if (_point.X <= Properties.Settings.Default._MazeTunnel)
-                                return _point;
+                            var _symbol = _maze.GetSymbol(_point);
+                            if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
+                                if (_point.X <= Properties.Settings.Default._MazeTunnel)
+                                    return _point;
+                            _explored.Add(_point);
                         }
                         if (!_closed.Contains(_point))
                             _open.Add(_point);
@@ -234,7 +236,7 @@ namespace pacmanduelbot.brainbox
                 _open.Remove(_open[0]);
             }
 
-            //Give up
+            //I give up
             _open.Clear(); _open.Add(_CURRENT_POSITION);
             _closed.Clear(); _explored.Clear();
             while (_open.Count != 0)
