@@ -191,7 +191,8 @@ namespace pacmanduelbot.brainbox
             }
 
             //Otherwise
-            var _opp_pos = _OPPONENT_POSITION;
+            var _opp_target = new Point();
+            var _opp_cost = 0;
             while (_open.Count != 0)
             {
                 _closed.Add(_open[0]);
@@ -205,11 +206,20 @@ namespace pacmanduelbot.brainbox
                             //TODO:                        
                             if (!_OPPONENT_POSITION.IsEmpty)
                             {
-                                var _hiscost = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _point);
-                                var _hercost = Moves.FindPathToPill(_maze, _opp_pos, _point);
-                                if (_hiscost[0].X <= _hercost[0].X)
+                                var _my_cost = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _point)[0].X;
+                                if (_opp_target.IsEmpty)
+                                {
+                                    _opp_target = _point;
+                                    _opp_cost = Moves.FindPathToPill(_maze, _OPPONENT_POSITION, _point)[0].X;
+                                }
+                                else
+                                {
+                                    _opp_cost = Moves.FindPathToPill(_maze, _OPPONENT_POSITION, _opp_target)[0].X
+                                    + Moves.FindPathToPill(_maze, _opp_target, _point)[0].X;
+                                }
+                                if (_my_cost <= _opp_cost)
                                     return _point;
-                                _opp_pos = _hercost[1];
+                                _opp_target = _point;
                             }
                             else
                             {
@@ -224,6 +234,7 @@ namespace pacmanduelbot.brainbox
                 _open.Remove(_open[0]);
             }
 
+            //Give up
             _open.Clear(); _open.Add(_CURRENT_POSITION);
             _closed.Clear(); _explored.Clear();
             while (_open.Count != 0)

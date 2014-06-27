@@ -3,6 +3,7 @@ using pacmanduelbot.shared;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace pacmanduelbot.helpers
 {
@@ -10,79 +11,79 @@ namespace pacmanduelbot.helpers
     {
         public static List<Point> FindPathToPill(Maze _maze, Point _start, Point _destination)
         {
-            var _next_list = new List<Point>();
-            var _closedset = new List<PathFinderNode>();
-            var h_score = Math.Abs(_start.X - _destination.X) + Math.Abs(_start.Y - _destination.Y);
-            var _openset = new List<PathFinderNode>
+            var _nextList = new List<Point>();
+            var _closedSet = new List<PathFinderNode>();
+            var _hScore = Math.Abs(_start.X - _destination.X) + Math.Abs(_start.Y - _destination.Y);
+            var _openSet = new List<PathFinderNode>
             {
                 new PathFinderNode
                 {
                     _position = _start,
                     _g_score = 0,
-                    _h_score = h_score,
-                    _f_score = h_score
+                    _h_score = _hScore,
+                    _f_score = _hScore
                 }
             };
 
-            while (!(_openset.Count == 0))
+            while (!(_openSet.Count == 0))
             {
-                var _current = FindLowFScore(_openset);
+                var _current = FindLowFScore(_openSet);
                 if (_current._position.Equals(_destination))
                 {
                     //TODO:
-                    _next_list.Add(new Point { X = _current._g_score });
-                    _next_list.Add(ReconstructPath(_current, _closedset)._position);
-                    return _next_list;
+                    _nextList.Add(new Point { X = _current._g_score });
+                    _nextList.Add(ReconstructPath(_current, _closedSet)._position);
+                    return _nextList;
                 }
-                _openset.Remove(_current);
-                _closedset.Add(_current);
+                _openSet.Remove(_current);
+                _closedSet.Add(_current);
 
                 var _neighbor_nodes = GenerateMoves(_maze, _current._position);
 
                 foreach (var neighbor in _neighbor_nodes)
                 {
-                    var _tentative_g_score = _current._g_score + 1;
-                    h_score = Math.Abs(neighbor.X - _destination.X) + Math.Abs(neighbor.Y - _destination.Y);
+                    var _tentative_gScore = _current._g_score + 1;
+                    _hScore = Math.Abs(neighbor.X - _destination.X) + Math.Abs(neighbor.Y - _destination.Y);
                     var _neighbor_node = new PathFinderNode
                     {
                         _position = neighbor,
-                        _g_score = _tentative_g_score,
-                        _h_score = h_score,
-                        _f_score = _tentative_g_score + h_score,
+                        _g_score = _tentative_gScore,
+                        _h_score = _hScore,
+                        _f_score = _tentative_gScore + _hScore,
                         _parent = _current
                     };
-                    if (_closedset.Contains(_neighbor_node))
+                    if (_closedSet.Contains(_neighbor_node))
                         continue;
-                    var _neighbor = FindNeighborInOpenSet(_openset, neighbor);
+                    var _neighbor = FindNeighborInOpenSet(_openSet, neighbor);
                     if (!(_neighbor == null)
-                        && _tentative_g_score < _neighbor._g_score)
+                        && _tentative_gScore < _neighbor._g_score)
                     {
-                        _openset.Remove(_neighbor);
-                        _openset.Add(_neighbor_node);
+                        _openSet.Remove(_neighbor);
+                        _openSet.Add(_neighbor_node);
 
                     }
                     else if (_neighbor == null)
                     {
-                        _openset.Add(_neighbor_node);
+                        _openSet.Add(_neighbor_node);
                     }
                 }
 
             }
 
-            return _next_list;
+            return _nextList;
         }
 
-        private static PathFinderNode ReconstructPath(PathFinderNode _current_node, List<PathFinderNode> _closedset)
+        private static PathFinderNode ReconstructPath(PathFinderNode _current_node, List<PathFinderNode> _closedSet)
         {
-            if (_current_node._parent == _closedset[0])
+            if (_current_node._parent == _closedSet[0])
                 return _current_node;
             else
-                return ReconstructPath(_current_node._parent, _closedset);
+                return ReconstructPath(_current_node._parent, _closedSet);
         }
 
-        private static PathFinderNode FindNeighborInOpenSet(List<PathFinderNode> _openset, Point neighbor)
+        private static PathFinderNode FindNeighborInOpenSet(List<PathFinderNode> _openSet, Point neighbor)
         {
-            foreach (var node in _openset)
+            foreach (var node in _openSet)
             {
                 if (node._position == neighbor)
                     return node;
@@ -111,7 +112,6 @@ namespace pacmanduelbot.helpers
             };
             var _closed = new List<PathFinderNode>();
             var _depth = 0;
-            var startTime = DateTime.Now;
             while (_open.Count != 0 && _depth < depth)
             {
                 var _open_root = _open[0];
@@ -154,9 +154,8 @@ namespace pacmanduelbot.helpers
                 }
                 _depth++;
             }
-            var finishTime = DateTime.Now;
+            
             var curr = new PathFinderNode();
-
             if(_open.Count != 0)
             {
                 foreach(var _item in _closed)
@@ -164,9 +163,8 @@ namespace pacmanduelbot.helpers
                     if (_item._score > curr._score)
                         curr = _item;
                 }
-
-                var exit1Time = DateTime.Now;
                 return ReconstructPath(curr, _closed)._position;
+
             }
 
             
@@ -176,8 +174,12 @@ namespace pacmanduelbot.helpers
                     if (_item._score > curr._score)
                         curr = _item;
             }
-            var exit2Time = DateTime.Now;
-            return ReconstructPath(curr, _closed)._position;
+            var _longestStreaks = _closed.Where(pathNode => pathNode._score == curr._score).ToList();
+            if(_longestStreaks.Count == 1)
+                return ReconstructPath(curr, _closed)._position;
+            var random = new Random();
+            var _longestPathIndex = random.Next(0, _longestStreaks.Count);
+            return ReconstructPath(_longestStreaks[_longestPathIndex], _closed)._position;            
         }
 
         private static bool isLeaf(Maze maze, PathFinderNode parent, Point point)
