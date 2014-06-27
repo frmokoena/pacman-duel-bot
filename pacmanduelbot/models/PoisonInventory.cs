@@ -14,9 +14,7 @@ namespace pacmanduelbot.models
         public static bool ArePoisonPillsExhausted()
         {
             int _NUMBER_OF_POISON_PILLS;
-            var result = false;
             var _CONTENTS = new string[2];
-
             try
             {
                 var _input = System.IO.File.ReadAllText(_poisonfilepath);
@@ -33,20 +31,13 @@ namespace pacmanduelbot.models
             }
 
             bool parsed = Int32.TryParse(_CONTENTS[0], out _NUMBER_OF_POISON_PILLS);
-
-            if (!parsed)
-                return result;
-            if (_NUMBER_OF_POISON_PILLS < 1)
-                result = true;
-            return result;
+            return parsed && _NUMBER_OF_POISON_PILLS < 1;
         }
 
         public static bool IsSelfRespawn()
         {
             int _RESPAWN_NEEDED;
-            var result = false;
             var _CONTENTS = new string[2];
-
             try
             {
                 var _input = System.IO.File.ReadAllText(_poisonfilepath);
@@ -61,14 +52,8 @@ namespace pacmanduelbot.models
             {
                 Console.Write(e.ToString());
             }
-
             bool parsed = Int32.TryParse(_CONTENTS[1], out _RESPAWN_NEEDED);
-
-            if (!parsed)
-                return result;
-            if (_RESPAWN_NEEDED > 0)
-                result = true;
-            return result;
+            return parsed && _RESPAWN_NEEDED > 0;
         }
 
         public static void FillUpPoisonInventory()
