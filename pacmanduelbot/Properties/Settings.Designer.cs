@@ -193,5 +193,14 @@ namespace pacmanduelbot.Properties {
                 return ((string)(this["_OUTPUT_FILE_NAME"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("219")]
+        public int _MazeTotalPillCount {
+            get {
+                return ((int)(this["_MazeTotalPillCount"]));
+            }
+        }
     }
 }

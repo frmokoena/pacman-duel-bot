@@ -66,6 +66,11 @@ namespace pacmanduelbot.models
             _map[x][y] = symbol;
         }
 
+        public void SetSymbol(Point p, char symbol)
+        {
+            _map[p.X][p.Y] = symbol;
+        }
+
         public Point FindCoordinateOf(char symbol)
         {
             for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)

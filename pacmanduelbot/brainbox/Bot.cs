@@ -16,60 +16,64 @@ namespace pacmanduelbot.brainbox
         {
             if (!_CURRENT_POSITION.IsEmpty)
             {
+                ScoreCard.UpdateScore(_maze, false);
                 var _next_position = BotMove();
 
                 if (SelfRespawnNeeded())
                     return SelfRespawn(_next_position);
 
                 if (_DROP_PILL)
-                    return MakeMoveAndDropPill(_next_position);
+                    return MakeMoveAndDropPoisonPill(_next_position);
 
-                _maze.SetSymbol(_CURRENT_POSITION.X, _CURRENT_POSITION.Y, Symbols._EMPTY);
-                _maze.SetSymbol(_next_position.X, _next_position.Y, Symbols._PLAYER_A);
+                _maze.SetSymbol(_CURRENT_POSITION, Symbols._EMPTY);
+                _maze.SetSymbol(_next_position, Symbols._PLAYER_A);
+                ScoreCard.UpdateScore(_maze, true);
             }
             return _maze;
         }
 
-        private Maze MakeMoveAndDropPill(Point _move)
+        private Maze MakeMoveAndDropPoisonPill(Point _move)
         {
-            _maze.SetSymbol(_CURRENT_POSITION.X,_CURRENT_POSITION.Y, Symbols._POISON_PILL);
-            _maze.SetSymbol(_move.X,_move.Y,Symbols._PLAYER_A);
             PoisonInventory.DropPoisonPill();
-
+            _maze.SetSymbol(_CURRENT_POSITION, Symbols._POISON_PILL);
+            _maze.SetSymbol(_move,Symbols._PLAYER_A);
             return _maze;
         }
 
         private Maze SelfRespawn(Point _move)
         {
-            var _next = new Point();
-            var list = Moves.GenerateMoves(_maze, _CURRENT_POSITION);
-            foreach (var _point in list)
+            var _pointlist = Moves.GenerateMoves(_maze, _CURRENT_POSITION);
+            foreach (var _point in _pointlist)
             {
                 if (_maze.GetSymbol(_point).Equals(Symbols._POISON_PILL))
                 {
-                    _next = _point;
-                    break;
+                    PoisonInventory.EmptyPoisonInventory();
+                    _maze.SetSymbol(_CURRENT_POSITION, Symbols._EMPTY);
+                    _maze.SetSymbol(_point, Symbols._PLAYER_A);
+                    return _maze;
                 }
             }
-            if (!_next.IsEmpty)
+            //TODO: maybe op left hers
+            var _poisonPill = FindNearbyPill(true);
+            if (!_poisonPill.IsEmpty)
             {
-                _maze.SetSymbol(_CURRENT_POSITION.X,_CURRENT_POSITION.Y,Symbols._EMPTY);
-                _maze.SetSymbol(_next.X,_next.Y,Symbols._PLAYER_A);
-                PoisonInventory.EmptyPoisonInventory();
+                var _nextMove = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _poisonPill);
+                _maze.SetSymbol(_CURRENT_POSITION, Symbols._EMPTY);
+                _maze.SetSymbol(_nextMove[1], Symbols._PLAYER_A);
                 return _maze;
             }
-            _maze.SetSymbol(_CURRENT_POSITION.X,_CURRENT_POSITION.Y,Symbols._EMPTY);
-            _maze.SetSymbol(_move.X, _move.Y, Symbols._PLAYER_A);
-            PoisonInventory.EmptyPoisonInventory();
-            return _maze;
-        }
 
- 
+            //tough luck
+            PoisonInventory.EmptyPoisonInventory();
+            _maze.SetSymbol(_CURRENT_POSITION,Symbols._EMPTY);
+            _maze.SetSymbol(_move, Symbols._PLAYER_A);            
+            return _maze;
+        } 
 
         private Point BotMove()
         {
             var _move = new List<Point>();            
-            var _next = FindNearbyPill();
+            var _next = FindNearbyPill(false);
             
             if (_maze.GetSymbol(_next).Equals(Symbols._BONUS_PILL))
             {
@@ -116,7 +120,7 @@ namespace pacmanduelbot.brainbox
             }
         }
 
-        private Point FindNearbyPill()
+        private Point FindNearbyPill(bool FindPoisonPill)
         {
             var _next = new Point();
             var _open = new List<Point>
@@ -125,6 +129,35 @@ namespace pacmanduelbot.brainbox
             };
             var _closed = new List<Point>();
             var _explored = new List<Point>();
+
+
+            if(FindPoisonPill)
+            {
+                while (_open.Count != 0)
+                {
+                    _closed.Add(_open[0]);
+                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
+                    foreach (var _point in _templist)
+                    {
+                        if (!_explored.Contains(_point))
+                        {
+                            if (_maze.GetSymbol(_point).Equals(Symbols._POISON_PILL))
+                            {
+                                var _cost = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _point)[0].X;
+                                if (_cost < 4)
+                                    return _point;
+                                else
+                                    return new Point();
+                            }                                
+                            _explored.Add(_point);
+                        }
+                        if (!_closed.Contains(_point))
+                            _open.Add(_point);
+                    }
+                    _open.Remove(_open[0]);
+                }
+                return new Point();
+            }
 
             for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
             {
@@ -144,7 +177,8 @@ namespace pacmanduelbot.brainbox
             //TODO: some intelligence ==> need some re-do
             //if
             if (_CURRENT_POSITION.X <= Properties.Settings.Default._MazeTunnel
-                && _LOWER_PILL_COUNT > _UPPER_PILL_COUNT + 15)
+                && _LOWER_PILL_COUNT > _UPPER_PILL_COUNT + 15
+                && _OPPONENT_POSITION.X > Properties.Settings.Default._MazeTunnel)
             {
                 while (_open.Count != 0)
                 {
@@ -169,7 +203,8 @@ namespace pacmanduelbot.brainbox
 
             //else
             if (_CURRENT_POSITION.X > Properties.Settings.Default._MazeTunnel
-                && _UPPER_PILL_COUNT > _LOWER_PILL_COUNT + 15)
+                && _UPPER_PILL_COUNT > _LOWER_PILL_COUNT + 15
+                && _OPPONENT_POSITION.X < Properties.Settings.Default._MazeTunnel)
             {
                 while (_open.Count != 0)
                 {

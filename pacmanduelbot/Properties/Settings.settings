@@ -59,5 +59,8 @@
     <Setting Name="_OUTPUT_FILE_NAME" Type="System.String" Scope="Application">
       <Value Profile="(Default)">game.state</Value>
     </Setting>
+    <Setting Name="_MazeTotalPillCount" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">219</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
