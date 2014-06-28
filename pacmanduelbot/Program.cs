@@ -1,4 +1,5 @@
 ﻿using pacmanduelbot.brainbox;
+using pacmanduelbot.helpers;
 using pacmanduelbot.models;
 using pacmanduelbot.shared;
 using System;
@@ -11,7 +12,16 @@ namespace pacmanduelbot
         {
             //string _filepath = @"..\..\..\game.state";
             //var maze = new Maze(_filepath);
-            
+            var maze = new Maze(args[0]);
+
+            if (IsTheGameStart(maze)) { PoisonBucket.FillUpPoisonBucket(); ScoreCard.CleanScoreCard(maze); }
+
+
+            Bot _Bot = new Bot { _maze = maze };
+
+            maze = _Bot.MakeMove();
+
+            maze.WriteMaze(Properties.Settings.Default._OUTPUT_FILE_NAME);
         }
 
         public static bool IsTheGameStart(Maze _maze)
