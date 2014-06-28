@@ -21,7 +21,7 @@ namespace pacmanduelbot.helpers
         {
             string _input;
             _maze.WriteMaze(_pathToGameState);
-            if (PillCount(_maze) < Properties.Settings.Default._MazeTotalPillCount)
+            if (PillCountToScore(_maze) < Properties.Settings.Default._MazeTotalPillCount)
                 _input = "0,1";
             else
                 _input = "0,0";
@@ -90,17 +90,17 @@ namespace pacmanduelbot.helpers
             var _previousMaze = new Maze(_pathToGameState);
             var _currentMaze = new Maze(_maze);
 
-            var _previousPillCount = PillCount(_previousMaze);
-            var _currentPillCount = PillCount(_currentMaze);
+            var _previousPillCountToScore = PillCountToScore(_previousMaze);
+            var _currentPillCountToScore = PillCountToScore(_currentMaze);
 
-            if(_currentPillCount != _previousPillCount)
+            if(_currentPillCountToScore != _previousPillCountToScore)
             {
-                if (_currentPillCount == _previousPillCount - 1)
+                if (_currentPillCountToScore == _previousPillCountToScore - 1)
                     if (MaxPlayer)
                         _playerASscore++;
                     else
                         _playerBScore++;
-                if (_currentPillCount == _previousPillCount - 10)
+                if (_currentPillCountToScore == _previousPillCountToScore - 10)
                     if (MaxPlayer)
                         _playerASscore = _playerASscore + 10;
                     else
@@ -116,7 +116,7 @@ namespace pacmanduelbot.helpers
             }
         }
         
-        public static int PillCount(Maze _maze)
+        public static int PillCountToScore(Maze _maze)
         {
             var _PILL_COUNT = 0;
             for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)

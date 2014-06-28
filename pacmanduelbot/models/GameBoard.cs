@@ -33,8 +33,8 @@ namespace pacmanduelbot.models
 
         public void MakeMove(Point move, Point currentPoint, char PlayerSymbol)
         {
-            maze.SetSymbol(currentPoint.X, currentPoint.Y, Symbols._EMPTY);
-            maze.SetSymbol(move.X, move.Y, PlayerSymbol);
+            maze.SetSymbol(currentPoint, Symbols._EMPTY);
+            maze.SetSymbol(move, PlayerSymbol);
         }
     }
 }

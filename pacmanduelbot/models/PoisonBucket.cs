@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace pacmanduelbot.models
 {
-    class PoisonInventory
+    class PoisonBucket
     {
         public static readonly string _poisonfilepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
             + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
@@ -11,7 +11,7 @@ namespace pacmanduelbot.models
         //public static readonly string _poisonfilepath = ".." + System.IO.Path.DirectorySeparatorChar + ".."
         //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
         //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "POISON_PILL.csv";
-        public static bool ArePoisonPillsExhausted()
+        public static bool IsPoisonBucketEmpty()
         {
             int _NUMBER_OF_POISON_PILLS;
             var _CONTENTS = new string[2];
@@ -33,7 +33,7 @@ namespace pacmanduelbot.models
             return !parsed || _NUMBER_OF_POISON_PILLS < 1;
         }
 
-        public static bool IsSelfRespawn()
+        public static bool IsSelfRespawnNeeded()
         {
             int _RESPAWN_NEEDED;
             var _CONTENTS = new string[2];
@@ -55,7 +55,7 @@ namespace pacmanduelbot.models
             return !parsed || _RESPAWN_NEEDED > 0;
         }
 
-        public static void FillUpPoisonInventory()
+        public static void FillUpPoisonBucket()
         {
             string _input = "1,0";
             using (var file = new System.IO.StreamWriter(_poisonfilepath, false))
@@ -75,7 +75,7 @@ namespace pacmanduelbot.models
             }
         }
 
-        public static void EmptyPoisonInventory()
+        public static void EmptyPoisonBucket()
         {
             string _input = "0,0";
             using (var file = new System.IO.StreamWriter(_poisonfilepath, false))

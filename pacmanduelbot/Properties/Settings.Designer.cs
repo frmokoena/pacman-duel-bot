@@ -202,5 +202,14 @@ namespace pacmanduelbot.Properties {
                 return ((int)(this["_MazeTotalPillCount"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("109")]
+        public int _MazeDrawScore {
+            get {
+                return ((int)(this["_MazeDrawScore"]));
+            }
+        }
     }
 }
