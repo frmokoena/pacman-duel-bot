@@ -211,5 +211,41 @@ namespace pacmanduelbot.Properties {
                 return ((int)(this["_MazeDrawScore"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2, 1")]
+        public global::System.Drawing.Point _MazeBonusPillA {
+            get {
+                return ((global::System.Drawing.Point)(this["_MazeBonusPillA"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2, 17")]
+        public global::System.Drawing.Point _MazeBonusPillB {
+            get {
+                return ((global::System.Drawing.Point)(this["_MazeBonusPillB"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16, 1")]
+        public global::System.Drawing.Point _MazeBonusPillC {
+            get {
+                return ((global::System.Drawing.Point)(this["_MazeBonusPillC"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16, 17")]
+        public global::System.Drawing.Point _MazeBonusPillD {
+            get {
+                return ((global::System.Drawing.Point)(this["_MazeBonusPillD"]));
+            }
+        }
     }
 }

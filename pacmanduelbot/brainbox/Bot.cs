@@ -14,7 +14,7 @@ namespace pacmanduelbot.brainbox
 
         public Maze MakeMove()
         {
-            if (!_CURRENT_POSITION.IsEmpty)
+            if (!_PLAYER_A_POSITION.IsEmpty)
             {
                 ScoreCard.UpdateScore(_maze, false);
                 var _next_position = BotMove();
@@ -25,7 +25,7 @@ namespace pacmanduelbot.brainbox
                 if (_DROP_PILL)
                     return MakeMoveAndDropPoisonPill(_next_position);
 
-                _maze.SetSymbol(_CURRENT_POSITION, Symbols._EMPTY);
+                _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
                 _maze.SetSymbol(_next_position, Symbols._PLAYER_A);
                 ScoreCard.UpdateScore(_maze, true);
             }
@@ -35,20 +35,20 @@ namespace pacmanduelbot.brainbox
         private Maze MakeMoveAndDropPoisonPill(Point _move)
         {
             PoisonBucket.DropPoisonPill();
-            _maze.SetSymbol(_CURRENT_POSITION, Symbols._POISON_PILL);
+            _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._POISON_PILL);
             _maze.SetSymbol(_move, Symbols._PLAYER_A);
             return _maze;
         }
 
         private Maze SelfRespawn(Point _move)
         {
-            var _pointlist = Moves.GenerateMoves(_maze, _CURRENT_POSITION);
+            var _pointlist = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
             foreach (var _point in _pointlist)
             {
                 if (_maze.GetSymbol(_point).Equals(Symbols._POISON_PILL))
                 {
                     PoisonBucket.EmptyPoisonBucket();
-                    _maze.SetSymbol(_CURRENT_POSITION, Symbols._EMPTY);
+                    _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
                     _maze.SetSymbol(_point, Symbols._PLAYER_A);
                     return _maze;
                 }
@@ -57,15 +57,15 @@ namespace pacmanduelbot.brainbox
             var _poisonPill = FindNearbyPill(true);
             if (!_poisonPill.IsEmpty)
             {
-                var _nextMove = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _poisonPill);
-                _maze.SetSymbol(_CURRENT_POSITION, Symbols._EMPTY);
+                var _nextMove = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _poisonPill);
+                _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
                 _maze.SetSymbol(_nextMove[1], Symbols._PLAYER_A);
                 return _maze;
             }
 
             //tough luck
             PoisonBucket.EmptyPoisonBucket();
-            _maze.SetSymbol(_CURRENT_POSITION, Symbols._EMPTY);
+            _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
             _maze.SetSymbol(_move, Symbols._PLAYER_A);
             return _maze;
         }
@@ -77,7 +77,7 @@ namespace pacmanduelbot.brainbox
 
             if (_maze.GetSymbol(_next).Equals(Symbols._BONUS_PILL))
             {
-                _move = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _next);
+                _move = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
                 return _move[1];
             }
 
@@ -85,7 +85,7 @@ namespace pacmanduelbot.brainbox
             //if (_decide[0].X < 4)
             //  return Moves.MinMaxDecision(_maze, _CURRENT_POSITION, _OPPONENT_POSITION);
 
-            var possibleMoveList = Moves.GenerateMoves(_maze, _CURRENT_POSITION);
+            var possibleMoveList = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
             var list = new List<Point>();
             foreach (var _point in possibleMoveList)
             {
@@ -99,11 +99,11 @@ namespace pacmanduelbot.brainbox
             switch (list.Count)
             {
                 case 0:
-                    _move = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _next);
+                    _move = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
                     if (!PoisonBucket.IsPoisonBucketEmpty()
-                        && !(_CURRENT_POSITION.X == Properties.Settings.Default._MazeRespawnX && _CURRENT_POSITION.Y == Properties.Settings.Default._MazeRespawnY)
-                        && !(_CURRENT_POSITION.X == Properties.Settings.Default._MazeRespawnExitUpX && _CURRENT_POSITION.Y == Properties.Settings.Default._MazeRespawnExitUpY)
-                        && !(_CURRENT_POSITION.X == Properties.Settings.Default._MazeRespawnExitDownX && _CURRENT_POSITION.Y == Properties.Settings.Default._MazeRespawnExitDownY))
+                        && !(_PLAYER_A_POSITION.X == Properties.Settings.Default._MazeRespawnX && _PLAYER_A_POSITION.Y == Properties.Settings.Default._MazeRespawnY)
+                        && !(_PLAYER_A_POSITION.X == Properties.Settings.Default._MazeRespawnExitUpX && _PLAYER_A_POSITION.Y == Properties.Settings.Default._MazeRespawnExitUpY)
+                        && !(_PLAYER_A_POSITION.X == Properties.Settings.Default._MazeRespawnExitDownX && _PLAYER_A_POSITION.Y == Properties.Settings.Default._MazeRespawnExitDownY))
                     {
                         var _gd = _move[0].X;
                         var _temp = Moves.FindPathToPill(_maze, new Point { X = Properties.Settings.Default._MazeRespawnX, Y = Properties.Settings.Default._MazeRespawnY }, _next);
@@ -116,22 +116,21 @@ namespace pacmanduelbot.brainbox
                 case 1:
                     return list[0];
                 default:
-                    return Moves.PathSelect(_maze, _CURRENT_POSITION, 1000);
+                    return Moves.PathSelect(_maze, _PLAYER_A_POSITION, 1000);
             }
         }
 
-        private Point FindNearbyPill(bool FindPoisonPill)
+        private Point FindNearbyPill(bool NeedPoisonPill)
         {
             var _next = new Point();
             var _open = new List<Point>
             {
-                _CURRENT_POSITION
+                _PLAYER_A_POSITION
             };
             var _closed = new List<Point>();
             var _explored = new List<Point>();
 
-
-            if (FindPoisonPill)
+            if (NeedPoisonPill)
             {
                 while (_open.Count != 0)
                 {
@@ -143,7 +142,7 @@ namespace pacmanduelbot.brainbox
                         {
                             if (_maze.GetSymbol(_point).Equals(Symbols._POISON_PILL))
                             {
-                                var _cost = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _point)[0].X;
+                                var _cost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
                                 if (_cost < 4)
                                     return _point;
                                 else
@@ -159,183 +158,171 @@ namespace pacmanduelbot.brainbox
                 return new Point();
             }
 
-            for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
+            //for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
+            //{
+            //    for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
+            //    {
+            //        if (_maze.GetSymbol(x, y).Equals(Symbols._BONUS_PILL))
+            //        {
+            //            _next = new Point { X = x, Y = y };
+            //            var _temp = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
+            //            var _tempg = _temp[0].X;
+            //            if (_tempg < 10)
+            //                return _next;
+            //        }
+            //    }
+            //}
+
+            if (!AreBonusPillExhausted())
             {
-                for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
+                //TODO:
+                var _playerAcostToBonusPill = 0;
+
+                //PILL_A
+                if(_BONUS_PILL_A.Equals(Symbols._BONUS_PILL))
                 {
-                    if (_maze.GetSymbol(x, y).Equals(Symbols._BONUS_PILL))
-                    {
-                        _next = new Point { X = x, Y = y };
-                        var _temp = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _next);
-                        var _tempg = _temp[0].X;
-                        if (_tempg < 10)
-                            return _next;
-                    }
+                    _playerAcostToBonusPill = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, Properties.Settings.Default._MazeBonusPillA)[0].X;
+                    if (_playerAcostToBonusPill < 10)
+                        return Properties.Settings.Default._MazeBonusPillA;
+                }
+
+                //PILL_B
+                if (_BONUS_PILL_B.Equals(Symbols._BONUS_PILL))
+                {
+                    _playerAcostToBonusPill = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, Properties.Settings.Default._MazeBonusPillB)[0].X;
+                    if (_playerAcostToBonusPill < 10)
+                        return Properties.Settings.Default._MazeBonusPillB;
+                }
+
+                //PILL_C
+                if (_BONUS_PILL_C.Equals(Symbols._BONUS_PILL))
+                {
+                    _playerAcostToBonusPill = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, Properties.Settings.Default._MazeBonusPillC)[0].X;
+                    if (_playerAcostToBonusPill < 10)
+                        return Properties.Settings.Default._MazeBonusPillC;
+                }
+
+                //PILL_D
+                if (_BONUS_PILL_D.Equals(Symbols._BONUS_PILL))
+                {
+                    _playerAcostToBonusPill = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, Properties.Settings.Default._MazeBonusPillD)[0].X;
+                    if (_playerAcostToBonusPill < 10)
+                        return Properties.Settings.Default._MazeBonusPillD;
                 }
             }
 
             //TODO: Capitalize
-            if (_CURRENT_POSITION.X <= Properties.Settings.Default._MazeTunnel
-                && _OPPONENT_POSITION.X > Properties.Settings.Default._MazeTunnel
-                && ScoreCard.GetPlayerAScore() + _UPPER_PILL_COUNT > Properties.Settings.Default._MazeDrawScore)
+            int _playerAcost = 0, _playerBcost = 0;
+            Point _playerBtarget;
+            if ((_PLAYER_A_POSITION.X > Properties.Settings.Default._MazeTunnel
+                && ScoreCard.GetPlayerAScore() + _UPPER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore)
+                || (_PLAYER_B_POSITION.X > Properties.Settings.Default._MazeTunnel
+                && ScoreCard.GetPlayerBScore() + _UPPER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
             {
+                //TODO: Stay up there
+                _playerBtarget = new Point();
                 while (_open.Count != 0)
                 {
                     _closed.Add(_open[0]);
                     var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     foreach (var _point in _templist)
                     {
-                        if (!_explored.Contains(_point))
+                        if (_point.X > Properties.Settings.Default._MazeTunnel)
                         {
-                            var _symbol = _maze.GetSymbol(_point);
-                            if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
-                                if (_point.X <= Properties.Settings.Default._MazeTunnel)
-                                    return _point;
-                            _explored.Add(_point);
+                            if (!_explored.Contains(_point))
+                            {
+                                if (_maze.GetSymbol(_point).Equals(Symbols._PILL) || _maze.GetSymbol(_point).Equals(Symbols._BONUS_PILL))
+                                {
+                                    //TODO:                        
+                                    if (!_PLAYER_B_POSITION.IsEmpty)
+                                    {
+                                        _playerAcost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
+                                        if (_playerBtarget.IsEmpty)
+                                        {
+                                            _playerBtarget = _point;
+                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
+                                        }
+                                        else
+                                        {
+                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
+                                            + Moves.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
+                                        }
+                                        if (_playerAcost <= _playerBcost)
+                                            return _point;
+                                        _playerBtarget = _point;
+                                    }
+                                    else
+                                    {
+                                        return _point;
+                                    }
+                                }
+                                _explored.Add(_point);
+                            }
+                            if (!_closed.Contains(_point))
+                                _open.Add(_point);
                         }
-                        if (!_closed.Contains(_point))
-                            _open.Add(_point);
                     }
                     _open.Remove(_open[0]);
                 }
+                _open.Clear(); _open.Add(_PLAYER_A_POSITION);
+                _closed.Clear(); _explored.Clear();
             }
 
-            if (_CURRENT_POSITION.X > Properties.Settings.Default._MazeTunnel
-                && _OPPONENT_POSITION.X < Properties.Settings.Default._MazeTunnel
-                && ScoreCard.GetPlayerAScore() + _LOWER_PILL_COUNT > Properties.Settings.Default._MazeDrawScore)
+            if ((_PLAYER_A_POSITION.X <= Properties.Settings.Default._MazeTunnel
+                && ScoreCard.GetPlayerAScore() + _LOWER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore)
+                || (_PLAYER_B_POSITION.X <= Properties.Settings.Default._MazeTunnel
+                && ScoreCard.GetPlayerBScore() + _LOWER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
             {
+                //TODO: Stay down there
+                _playerBtarget = new Point();
                 while (_open.Count != 0)
                 {
                     _closed.Add(_open[0]);
                     var _templist = Moves.GenerateMoves(_maze, _open[0]);
                     foreach (var _point in _templist)
                     {
-                        if (!_explored.Contains(_point))
+                        if (_point.X <= Properties.Settings.Default._MazeTunnel)
                         {
-                            var _symbol = _maze.GetSymbol(_point);
-                            if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
-                                if (_point.X > Properties.Settings.Default._MazeTunnel)
-                                    return _point;
-                            _explored.Add(_point);
+                            if (!_explored.Contains(_point))
+                            {
+                                if (_maze.GetSymbol(_point).Equals(Symbols._PILL) || _maze.GetSymbol(_point).Equals(Symbols._BONUS_PILL))
+                                {
+                                    //TODO:                        
+                                    if (!_PLAYER_B_POSITION.IsEmpty)
+                                    {
+                                        _playerAcost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
+                                        if (_playerBtarget.IsEmpty)
+                                        {
+                                            _playerBtarget = _point;
+                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
+                                        }
+                                        else
+                                        {
+                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
+                                            + Moves.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
+                                        }
+                                        if (_playerAcost <= _playerBcost)
+                                            return _point;
+                                        _playerBtarget = _point;
+                                    }
+                                    else
+                                    {
+                                        return _point;
+                                    }
+                                }
+                                _explored.Add(_point);
+                            }
+                            if (!_closed.Contains(_point))
+                                _open.Add(_point);
                         }
-                        if (!_closed.Contains(_point))
-                            _open.Add(_point);
                     }
                     _open.Remove(_open[0]);
                 }
+                _open.Clear(); _open.Add(_PLAYER_A_POSITION);
+                _closed.Clear(); _explored.Clear();
             }
 
-
-            //TODO: compete capitalize
-            if (_CURRENT_POSITION.X <= Properties.Settings.Default._MazeTunnel
-                && _OPPONENT_POSITION.X < Properties.Settings.Default._MazeTunnel
-                && ScoreCard.GetPlayerAScore() + _LOWER_PILL_COUNT > Properties.Settings.Default._MazeDrawScore)
-            {
-                while (_open.Count != 0)
-                {
-                    _closed.Add(_open[0]);
-                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
-                    foreach (var _point in _templist)
-                    {
-                        if (!_explored.Contains(_point))
-                        {
-                            var _symbol = _maze.GetSymbol(_point);
-                            if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
-                                if (_point.X > Properties.Settings.Default._MazeTunnel)
-                                    return _point;
-                            _explored.Add(_point);
-                        }
-                        if (!_closed.Contains(_point))
-                            _open.Add(_point);
-                    }
-                    _open.Remove(_open[0]);
-                }
-            }
-
-            if (_CURRENT_POSITION.X > Properties.Settings.Default._MazeTunnel 
-                && _OPPONENT_POSITION.X > Properties.Settings.Default._MazeTunnel 
-                && ScoreCard.GetPlayerAScore() + _UPPER_PILL_COUNT > Properties.Settings.Default._MazeDrawScore)
-            {
-                while (_open.Count != 0)
-                {
-                    _closed.Add(_open[0]);
-                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
-                    foreach (var _point in _templist)
-                    {
-                        if (!_explored.Contains(_point))
-                        {
-                            var _symbol = _maze.GetSymbol(_point);
-                            if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
-                                if (_point.X < Properties.Settings.Default._MazeTunnel)
-                                    return _point;
-                            _explored.Add(_point);
-                        }
-                        if (!_closed.Contains(_point))
-                            _open.Add(_point);
-                    }
-                    _open.Remove(_open[0]);
-                }
-            }
-
-
-
-
-            //TODO: some intelligence ==> need some re-do
-            //if
-            //if (_CURRENT_POSITION.X <= Properties.Settings.Default._MazeTunnel
-            //    && _LOWER_PILL_COUNT > ScoreCard.GetPlayerAScore() + 15 //&& _LOWER_PILL_COUNT > _UPPER_PILL_COUNT + 15
-            //    && _OPPONENT_POSITION.X > Properties.Settings.Default._MazeTunnel)
-            //{
-            //    while (_open.Count != 0)
-            //    {
-            //        _closed.Add(_open[0]);
-            //        var _templist = Moves.GenerateMoves(_maze, _open[0]);
-            //        foreach (var _point in _templist)
-            //        {
-            //            if (!_explored.Contains(_point))
-            //            {
-            //                var _symbol = _maze.GetSymbol(_point);
-            //                if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
-            //                    if (_point.X > Properties.Settings.Default._MazeTunnel)
-            //                        return _point;
-            //                _explored.Add(_point);
-            //            }
-            //            if (!_closed.Contains(_point))
-            //                _open.Add(_point);
-            //        }
-            //        _open.Remove(_open[0]);
-            //    }
-            //}
-
-            ////else
-            //if (_CURRENT_POSITION.X > Properties.Settings.Default._MazeTunnel
-            //    && _UPPER_PILL_COUNT > ScoreCard.GetPlayerAScore() + 15//_UPPER_PILL_COUNT > _LOWER_PILL_COUNT + 15
-            //    && _OPPONENT_POSITION.X < Properties.Settings.Default._MazeTunnel)
-            //{
-            //    while (_open.Count != 0)
-            //    {
-            //        _closed.Add(_open[0]);
-            //        var _templist = Moves.GenerateMoves(_maze, _open[0]);
-            //        foreach (var _point in _templist)
-            //        {
-            //            if (!_explored.Contains(_point))
-            //            {
-            //                var _symbol = _maze.GetSymbol(_point);
-            //                if (_symbol.Equals(Symbols._PILL) || _symbol.Equals(Symbols._BONUS_PILL))
-            //                    if (_point.X <= Properties.Settings.Default._MazeTunnel)
-            //                        return _point;
-            //                _explored.Add(_point);
-            //            }
-            //            if (!_closed.Contains(_point))
-            //                _open.Add(_point);
-            //        }
-            //        _open.Remove(_open[0]);
-            //    }
-            //}
-
-            //Otherwise
-            var _opp_target = new Point();
-            var _opp_cost = 0;
+            _playerBtarget = new Point();
             while (_open.Count != 0)
             {
                 _closed.Add(_open[0]);
@@ -344,25 +331,25 @@ namespace pacmanduelbot.brainbox
                 {
                     if (!_explored.Contains(_point))
                     {
-                        if (_maze.GetSymbol(_point).Equals(Symbols._PILL))
+                        if (_maze.GetSymbol(_point).Equals(Symbols._PILL) || _maze.GetSymbol(_point).Equals(Symbols._BONUS_PILL))
                         {
                             //TODO:                        
-                            if (!_OPPONENT_POSITION.IsEmpty)
+                            if (!_PLAYER_B_POSITION.IsEmpty)
                             {
-                                var _my_cost = Moves.FindPathToPill(_maze, _CURRENT_POSITION, _point)[0].X;
-                                if (_opp_target.IsEmpty)
+                                _playerAcost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
+                                if (_playerBtarget.IsEmpty)
                                 {
-                                    _opp_target = _point;
-                                    _opp_cost = Moves.FindPathToPill(_maze, _OPPONENT_POSITION, _point)[0].X;
+                                    _playerBtarget = _point;
+                                    _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
                                 }
                                 else
                                 {
-                                    _opp_cost = Moves.FindPathToPill(_maze, _OPPONENT_POSITION, _opp_target)[0].X
-                                    + Moves.FindPathToPill(_maze, _opp_target, _point)[0].X;
+                                    _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
+                                    + Moves.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
                                 }
-                                if (_my_cost <= _opp_cost)
+                                if (_playerAcost <= _playerBcost)
                                     return _point;
-                                _opp_target = _point;
+                                _playerBtarget = _point;
                             }
                             else
                             {
@@ -378,7 +365,7 @@ namespace pacmanduelbot.brainbox
             }
 
             //I give up
-            _open.Clear(); _open.Add(_CURRENT_POSITION);
+            _open.Clear(); _open.Add(_PLAYER_A_POSITION);
             _closed.Clear(); _explored.Clear();
             while (_open.Count != 0)
             {
@@ -388,7 +375,7 @@ namespace pacmanduelbot.brainbox
                 {
                     if (!_explored.Contains(_point))
                     {
-                        if (_maze.GetSymbol(_point).Equals(Symbols._PILL))
+                        if (_maze.GetSymbol(_point).Equals(Symbols._PILL) || _maze.GetSymbol(_point).Equals(Symbols._BONUS_PILL))
                             return _point;
                         _explored.Add(_point);
                     }
@@ -400,15 +387,16 @@ namespace pacmanduelbot.brainbox
             return _next;
         }
 
-        private Point _CURRENT_POSITION
+        private Point _PLAYER_A_POSITION
         {
             get
             {
+
                 return _maze.FindCoordinateOf(Symbols._PLAYER_A);
             }
         }
 
-        private Point _OPPONENT_POSITION
+        private Point _PLAYER_B_POSITION
         {
             get
             {
@@ -416,60 +404,84 @@ namespace pacmanduelbot.brainbox
             }
         }
 
-        private int _UPPER_PILL_COUNT
+        private int _LOWER_PILL_COUNT_TO_SCORE
         {
             get
             {
-                var _pill_count = 0;
+                var _PILL_COUNT = 0;
                 for (var x = 0; x < Properties.Settings.Default._MazeTunnel; x++)
                 {
                     for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
                     {
                         var _symbol = _maze.GetSymbol(x, y);
                         if (_symbol.Equals(Symbols._PILL))
-                            _pill_count++;
+                            _PILL_COUNT++;
                         if (_symbol.Equals(Symbols._BONUS_PILL))
-                            _pill_count = _pill_count + 10;
+                            _PILL_COUNT += 10;
                     }
                 }
-                return _pill_count;
+                return _PILL_COUNT;
             }
         }
 
-        private int _LOWER_PILL_COUNT
+        private int _UPPER_PILL_COUNT_TO_SCORE
         {
             get
             {
-                var _pill_count = 0;
+                var _PILL_COUNT = 0;
                 for (var x = Properties.Settings.Default._MazeTunnel + 1; x < Properties.Settings.Default._MazeHeight; x++)
                 {
                     for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
                     {
                         var _symbol = _maze.GetSymbol(x, y);
                         if (_symbol.Equals(Symbols._PILL))
-                            _pill_count++;
+                            _PILL_COUNT++;
                         if (_symbol.Equals(Symbols._BONUS_PILL))
-                            _pill_count = _pill_count + 10;
+                            _PILL_COUNT += 10;
                     }
                 }
-                return _pill_count;
+                return _PILL_COUNT;
             }
         }
 
-        public int PillCount()
+        private bool AreBonusPillExhausted()
         {
-            var _PILL_COUNT = 0;
-            for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
+            return !_BONUS_PILL_A.Equals(Symbols._BONUS_PILL)
+                && !_BONUS_PILL_B.Equals(Symbols._BONUS_PILL)
+                && !_BONUS_PILL_C.Equals(Symbols._BONUS_PILL)
+                && !_BONUS_PILL_D.Equals(Symbols._BONUS_PILL);
+        }
+
+        private char _BONUS_PILL_A
+        {
+            get
             {
-                for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
-                {
-                    var _symbol = _maze.GetSymbol(x, y);
-                    if (_symbol.Equals(Symbols._PILL)
-                        || _symbol.Equals(Symbols._BONUS_PILL))
-                        _PILL_COUNT++;
-                }
+                return _maze.GetSymbol(Properties.Settings.Default._MazeBonusPillA);
             }
-            return _PILL_COUNT;
+        }
+
+        private char _BONUS_PILL_B
+        {
+            get
+            {
+                return _maze.GetSymbol(Properties.Settings.Default._MazeBonusPillB);
+            }
+        }
+
+        private char _BONUS_PILL_C
+        {
+            get
+            {
+                return _maze.GetSymbol(Properties.Settings.Default._MazeBonusPillC);
+            }
+        }
+
+        private char _BONUS_PILL_D
+        {
+            get
+            {
+                return _maze.GetSymbol(Properties.Settings.Default._MazeBonusPillD);
+            }
         }
     }
 }

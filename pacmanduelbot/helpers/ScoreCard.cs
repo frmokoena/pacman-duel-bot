@@ -17,6 +17,15 @@ namespace pacmanduelbot.helpers
             + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
             + "game.state";
 
+        //public static readonly string _pathToScoreCard = ".." + System.IO.Path.DirectorySeparatorChar + ".."
+        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
+        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "scoreboard.csv";
+
+        //public static readonly string _pathToGameState = ".." + System.IO.Path.DirectorySeparatorChar + ".."
+        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
+        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "game.state";
+
+
         public static void CleanScoreCard(Maze _maze)
         {
             string _input;
@@ -93,7 +102,7 @@ namespace pacmanduelbot.helpers
             var _previousPillCountToScore = PillCountToScore(_previousMaze);
             var _currentPillCountToScore = PillCountToScore(_currentMaze);
 
-            if(_currentPillCountToScore != _previousPillCountToScore)
+            if (_currentPillCountToScore != _previousPillCountToScore)
             {
                 if (_currentPillCountToScore == _previousPillCountToScore - 1)
                     if (MaxPlayer)
@@ -115,7 +124,7 @@ namespace pacmanduelbot.helpers
                 _currentMaze.WriteMaze(_pathToGameState);
             }
         }
-        
+
         public static int PillCountToScore(Maze _maze)
         {
             var _PILL_COUNT = 0;
@@ -126,8 +135,8 @@ namespace pacmanduelbot.helpers
                     var _symbol = _maze.GetSymbol(x, y);
                     if (_symbol.Equals(Symbols._PILL))
                         _PILL_COUNT++;
-                    if(_symbol.Equals(Symbols._BONUS_PILL))
-                        _PILL_COUNT = _PILL_COUNT+10;
+                    if (_symbol.Equals(Symbols._BONUS_PILL))
+                        _PILL_COUNT = _PILL_COUNT + 10;
                 }
             }
             return _PILL_COUNT;
