@@ -169,15 +169,6 @@ namespace pacmanduelbot.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("183")]
-        public int _MazeNumberOfPills {
-            get {
-                return ((int)(this["_MazeNumberOfPills"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public int _MazeTunnel {
             get {
@@ -245,6 +236,15 @@ namespace pacmanduelbot.Properties {
         public global::System.Drawing.Point _MazeBonusPillD {
             get {
                 return ((global::System.Drawing.Point)(this["_MazeBonusPillD"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int _MaxTurnsWithNoPointsScored {
+            get {
+                return ((int)(this["_MaxTurnsWithNoPointsScored"]));
             }
         }
     }

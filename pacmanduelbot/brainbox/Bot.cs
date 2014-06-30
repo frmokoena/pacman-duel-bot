@@ -10,7 +10,8 @@ namespace pacmanduelbot.brainbox
     class Bot
     {
         public Maze _maze { get; set; }
-        private bool _DROP_PILL { get; set; }
+        private bool _DROP_POISON_PILL { get; set; }
+        private bool _KILL_PLAYER_B { get; set; }
 
         public Maze MakeMove()
         {
@@ -22,7 +23,7 @@ namespace pacmanduelbot.brainbox
                 if (PoisonBucket.IsSelfRespawnNeeded())
                     return SelfRespawn(_next_position);
 
-                if (_DROP_PILL)
+                if (_DROP_POISON_PILL)
                     return MakeMoveAndDropPoisonPill(_next_position);
 
                 _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
@@ -81,10 +82,6 @@ namespace pacmanduelbot.brainbox
                 return _move[1];
             }
 
-            //var _decide = Moves.BuildPath(_maze, _CURRENT_POSITION, _next);
-            //if (_decide[0].X < 4)
-            //  return Moves.MinMaxDecision(_maze, _CURRENT_POSITION, _OPPONENT_POSITION);
-
             var possibleMoveList = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
             var list = new List<Point>();
             foreach (var _point in possibleMoveList)
@@ -110,12 +107,28 @@ namespace pacmanduelbot.brainbox
                         var _gr = _temp[0].X + 5;
 
                         if (_gr < _gd)
-                            _DROP_PILL = true;
+                            _DROP_POISON_PILL = true;
                     }
                     return _move[1];
                 case 1:
+                    if (_KILL_PLAYER_B && ScoreCard.GetTurnsWithNoPointScored() < Properties.Settings.Default._MaxTurnsWithNoPointsScored)
+                    {
+                        foreach (var _point in possibleMoveList)
+                        {
+                            if (_maze.GetSymbol(_point).Equals(Symbols._PLAYER_B))
+                                return _point;
+                        }
+                    }
                     return list[0];
                 default:
+                    if(_KILL_PLAYER_B && ScoreCard.GetTurnsWithNoPointScored() < Properties.Settings.Default._MaxTurnsWithNoPointsScored)
+                    {
+                        foreach(var _point in possibleMoveList)
+                        {
+                            if (_maze.GetSymbol(_point).Equals(Symbols._PLAYER_B))
+                                return _point;
+                        }
+                    }
                     return Moves.PathSelect(_maze, _PLAYER_A_POSITION, 1000);
             }
         }
@@ -157,21 +170,6 @@ namespace pacmanduelbot.brainbox
                 }
                 return new Point();
             }
-
-            //for (var x = 0; x < Properties.Settings.Default._MazeHeight; x++)
-            //{
-            //    for (var y = 0; y < Properties.Settings.Default._MazeWidth; y++)
-            //    {
-            //        if (_maze.GetSymbol(x, y).Equals(Symbols._BONUS_PILL))
-            //        {
-            //            _next = new Point { X = x, Y = y };
-            //            var _temp = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
-            //            var _tempg = _temp[0].X;
-            //            if (_tempg < 10)
-            //                return _next;
-            //        }
-            //    }
-            //}
 
             if (!AreBonusPillExhausted())
             {
@@ -220,6 +218,7 @@ namespace pacmanduelbot.brainbox
                 && ScoreCard.GetPlayerBScore() + _UPPER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
             {
                 //TODO: Stay up there
+                _KILL_PLAYER_B = true;
                 _playerBtarget = new Point();
                 while (_open.Count != 0)
                 {
@@ -274,6 +273,7 @@ namespace pacmanduelbot.brainbox
                 && ScoreCard.GetPlayerBScore() + _LOWER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
             {
                 //TODO: Stay down there
+                _KILL_PLAYER_B = true;
                 _playerBtarget = new Point();
                 while (_open.Count != 0)
                 {

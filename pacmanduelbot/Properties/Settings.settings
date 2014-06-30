@@ -50,9 +50,6 @@
     <Setting Name="_MazeRespawnExitDownY" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">9</Value>
     </Setting>
-    <Setting Name="_MazeNumberOfPills" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">183</Value>
-    </Setting>
     <Setting Name="_MazeTunnel" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">10</Value>
     </Setting>
@@ -76,6 +73,9 @@
     </Setting>
     <Setting Name="_MazeBonusPillD" Type="System.Drawing.Point" Scope="Application">
       <Value Profile="(Default)">16, 17</Value>
+    </Setting>
+    <Setting Name="_MaxTurnsWithNoPointsScored" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">100</Value>
     </Setting>
   </Settings>
 </SettingsFile>

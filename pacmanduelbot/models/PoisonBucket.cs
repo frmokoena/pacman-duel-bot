@@ -7,10 +7,10 @@ namespace pacmanduelbot.models
     {
         public static readonly string _poisonfilepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
             + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-            + "poison_pill.csv";
+            + "poisonpillbucket.csv";
         //public static readonly string _poisonfilepath = ".." + System.IO.Path.DirectorySeparatorChar + ".."
-        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
-        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "POISON_PILL.csv";
+        //   + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
+        //   + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "poisonpillbucket.csv";
         public static bool IsPoisonBucketEmpty()
         {
             int _NUMBER_OF_POISON_PILLS;
