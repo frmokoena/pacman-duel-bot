@@ -43,9 +43,8 @@
   <ItemGroup>
     <Compile Include="brainbox\BotTest.cs" />
     <Compile Include="helpers\MovesTest.cs" />
-    <Compile Include="models\PoisonInventoryTest.cs" />
+    <Compile Include="models\PoisonBucketTes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="shared\MappingsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\pacmanduelbot\pacmanduelbot.csproj">

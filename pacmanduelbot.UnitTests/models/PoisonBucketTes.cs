@@ -4,7 +4,7 @@ using pacmanduelbot.models;
 namespace pacmanduelbot.UnitTests.models
 {
     [TestFixture]
-    public class PoisonInventoryTest
+    public class PoisonBucketTes
     {
         [Test]
         public void TestArePoisonPillsExhausted()

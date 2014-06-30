@@ -1,6 +1,4 @@
 ﻿using NUnit.Framework;
-using pacmanduelbot.brainbox;
-using pacmanduelbot.models;
 
 namespace pacmanduelbot.UnitTests.brainbox
 {
