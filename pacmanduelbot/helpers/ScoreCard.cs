@@ -12,14 +12,14 @@ namespace pacmanduelbot.helpers
     {
         public static readonly string _pathToScoreCard = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
             + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-            + "scoreboard.csv";
+            + "scorecard.csv";
         public static readonly string _pathToGameState = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
             + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
             + "game.state";
 
         //public static readonly string _pathToScoreCard = ".." + System.IO.Path.DirectorySeparatorChar + ".."
         //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
-        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "scoreboard.csv";
+        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "scorecard.csv";
 
         //public static readonly string _pathToGameState = ".." + System.IO.Path.DirectorySeparatorChar + ".."
         //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
@@ -29,38 +29,37 @@ namespace pacmanduelbot.helpers
         public static void CleanScoreCard(Maze _maze)
         {
             string _input;
-            _maze.WriteMaze(_pathToGameState);
-            if (PillCountToScore(_maze) < Properties.Settings.Default._MazeTotalPillCount)
-                _input = "0,1";
+            if (PillCountToScore(_maze) == Properties.Settings.Default._MazeTotalPillCount - 1)
+                _input = "0,1,0";
             else
-                _input = "0,0";
+                _input = "0,0,0";
             using (var file = new System.IO.StreamWriter(_pathToScoreCard, false))
             {
                 file.Write(_input);
                 file.Close();
             }
+            _maze.WriteMaze(_pathToGameState);
         }
-
 
         public static int GetPlayerAScore()
         {
             int _PlayerAScore;
-            var _CONTENTS = new string[2];
+            var _fileContests = new string[3];
             try
             {
+                var _index = 0;
                 var _input = System.IO.File.ReadAllText(_pathToScoreCard);
-                var columnCount = 0;
                 foreach (var column in Regex.Split(_input, ","))
                 {
-                    _CONTENTS[columnCount] = column;
-                    columnCount++;
+                    _fileContests[_index] = column;
+                    _index++;
                 }
             }
             catch (Exception e)
             {
                 Console.Write(e.ToString());
             }
-            bool parsed = Int32.TryParse(_CONTENTS[0], out _PlayerAScore);
+            bool parsed = Int32.TryParse(_fileContests[0], out _PlayerAScore);
             if (!parsed)
                 return -1;
             return _PlayerAScore;
@@ -69,53 +68,90 @@ namespace pacmanduelbot.helpers
         public static int GetPlayerBScore()
         {
             int _PlayerBScore;
-            var _CONTENTS = new string[2];
+            var _fileContents = new string[3];
             try
             {
                 var _input = System.IO.File.ReadAllText(_pathToScoreCard);
-                var columnCount = 0;
+                var _index = 0;
                 foreach (var column in Regex.Split(_input, ","))
                 {
-                    _CONTENTS[columnCount] = column;
-                    columnCount++;
+                    _fileContents[_index] = column;
+                    _index++;
                 }
             }
             catch (Exception e)
             {
                 Console.Write(e.ToString());
             }
-            bool parsed = Int32.TryParse(_CONTENTS[1], out _PlayerBScore);
+            bool parsed = Int32.TryParse(_fileContents[1], out _PlayerBScore);
             if (!parsed)
                 return -1;
             return _PlayerBScore;
         }
 
-
-        public static void UpdateScore(Maze _maze, bool MaxPlayer)
+        public static int GetTurnsWithNoPointScored()
         {
-            var _playerASscore = GetPlayerAScore();
-            var _playerBScore = GetPlayerBScore();
+            int _TurnsWithNoPointScored;
+            var _fileContents = new string[3];
+            try
+            {
+                var _input = System.IO.File.ReadAllText(_pathToScoreCard);
+                var _index = 0;
+                foreach (var column in Regex.Split(_input, ","))
+                {
+                    _fileContents[_index] = column;
+                    _index++;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.ToString());
+            }
+            bool parsed = Int32.TryParse(_fileContents[2], out _TurnsWithNoPointScored);
+            if (!parsed)
+                return -1;
+            return _TurnsWithNoPointScored;
+        }
 
+        public static void UpdateScore(Maze _maze, bool PlayerA)
+        {
             var _previousMaze = new Maze(_pathToGameState);
-            var _currentMaze = new Maze(_maze);
-
             var _previousPillCountToScore = PillCountToScore(_previousMaze);
+
+            var _currentMaze = new Maze(_maze);
             var _currentPillCountToScore = PillCountToScore(_currentMaze);
 
-            if (_currentPillCountToScore != _previousPillCountToScore)
-            {
-                if (_currentPillCountToScore == _previousPillCountToScore - 1)
-                    if (MaxPlayer)
-                        _playerASscore++;
-                    else
-                        _playerBScore++;
-                if (_currentPillCountToScore == _previousPillCountToScore - 10)
-                    if (MaxPlayer)
-                        _playerASscore = _playerASscore + 10;
-                    else
-                        _playerBScore = _playerBScore + 10;
+            var _playerAScore = GetPlayerAScore();
+            var _playerBScore = GetPlayerBScore();
+            var _TurnsWithNoPointScored = GetTurnsWithNoPointScored();
 
-                string _input = _playerASscore.ToString() + "," + _playerBScore.ToString(); ;
+            if (_currentPillCountToScore == _previousPillCountToScore)
+            {
+                if (_currentPillCountToScore != Properties.Settings.Default._MazeTotalPillCount
+                && _currentPillCountToScore != Properties.Settings.Default._MazeTotalPillCount - 1)
+                {
+                    _TurnsWithNoPointScored++;
+                    string _input = _playerAScore.ToString() + "," + _playerBScore.ToString() + "," + _TurnsWithNoPointScored.ToString();
+                    using (var file = new System.IO.StreamWriter(_pathToScoreCard, false))
+                    {
+                        file.Write(_input);
+                        file.Close();
+                    }
+                }
+            }
+            else
+            {
+                _TurnsWithNoPointScored = 0;
+                if (PlayerA)
+                {
+                    _playerAScore = (_currentPillCountToScore == _previousPillCountToScore - 1) ? _playerAScore += 1 : _playerAScore += 10;
+                }
+                else
+                {
+                    _playerBScore = (_currentPillCountToScore == _previousPillCountToScore - 1) ? _playerBScore+=1 : _playerBScore+=10;
+                }
+
+                string _input = _playerAScore.ToString() + "," + _playerBScore.ToString() + "," + _TurnsWithNoPointScored.ToString();
                 using (var file = new System.IO.StreamWriter(_pathToScoreCard, false))
                 {
                     file.Write(_input);
