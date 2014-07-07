@@ -1,7 +1,6 @@
 ﻿using pacmanduelbot.helpers;
 using pacmanduelbot.models;
 using pacmanduelbot.shared;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -18,10 +17,10 @@ namespace pacmanduelbot.brainbox
             if (!_PLAYER_A_POSITION.IsEmpty)
             {
                 ScoreCard.UpdateScore(_maze, false);
-                var _next_position = BotMove();
+                var _next_position = DetermineNextPosition();
 
                 if (PoisonBucket.IsSelfRespawnNeeded())
-                    return SelfRespawn(_next_position);
+                    return MakeMoveAndRespawn(_next_position);
 
                 if (_DROP_POISON_PILL)
                     return MakeMoveAndDropPoisonPill(_next_position);
@@ -41,7 +40,7 @@ namespace pacmanduelbot.brainbox
             return _maze;
         }
 
-        private Maze SelfRespawn(Point _move)
+        private Maze MakeMoveAndRespawn(Point _move)
         {
             var _pointlist = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
             foreach (var _point in _pointlist)
@@ -71,7 +70,7 @@ namespace pacmanduelbot.brainbox
             return _maze;
         }
 
-        private Point BotMove()
+        private Point DetermineNextPosition()
         {
             var _move = new List<Point>();
             var _next = FindNearbyPill(false);
