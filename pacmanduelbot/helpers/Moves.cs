@@ -67,9 +67,7 @@ namespace pacmanduelbot.helpers
                         _openSet.Add(_neighbor_node);
                     }
                 }
-
             }
-
             return _nextList;
         }
 
@@ -93,15 +91,7 @@ namespace pacmanduelbot.helpers
 
         private static PathFinderNode FindLowFScore(List<PathFinderNode> _openset)
         {
-            var _result = new PathFinderNode();
-            foreach (var _node in _openset)
-            {
-                if (_result._position.IsEmpty)
-                    _result = _node;
-                else if (_node._f_score < _result._f_score)
-                    _result = _node;
-            }
-            return _result;
+            return _openset.OrderBy(x => x._f_score).First();
         }
 
         public static Point PathSelect(Maze _maze, Point _current_position, int depth)
@@ -158,22 +148,12 @@ namespace pacmanduelbot.helpers
             var curr = new PathFinderNode();
             if(_open.Count != 0)
             {
-                foreach(var _item in _closed)
-                {
-                    if (_item._score > curr._score)
-                        curr = _item;
-                }
+                curr = _closed.OrderByDescending(x => x._score).First();
                 return ReconstructPath(curr, _closed)._position;
-
             }
 
-            
-            foreach (var _item in _closed)
-            {
-                if (_item._isLeaf)
-                    if (_item._score > curr._score)
-                        curr = _item;
-            }
+            curr = _closed.OrderByDescending(x => x._score).First();
+
             var _longestStreaks = _closed.Where(pathNode => pathNode._score == curr._score).ToList();
             if(_longestStreaks.Count == 1)
                 return ReconstructPath(curr, _closed)._position;
@@ -308,200 +288,5 @@ namespace pacmanduelbot.helpers
             return (point.X == Properties.Settings.Default._MazePortal2X)
                 && (point.Y == Properties.Settings.Default._MazePortal2Y);
         }
-
-        /*
-        public static Point MinMaxDecision(Maze _maze, Point MaxPosition, Point MinPosition)
-        {
-            var _nextMove = new Point();
-
-
-            var gameTree = new List<GameBoard>();
-
-            gameTree.Add(new GameBoard { maze = new Maze(_maze), MaxPlayer = MaxPosition, MinPlayer = MinPosition });
-            var depth = 0;
-            while (!isTerminalState(gameTree) && depth < 4)
-            {
-                var MaxCount = gameTree.Count;
-                for (var i = 0; i < MaxCount; i++)
-                {
-                    //MAX
-                    if (gameTree[i].isLastLevel)
-                    {
-                        gameTree[i].isLastLevel = false;
-                        var moveList = GenerateMoves(gameTree[i].maze, gameTree[i].MaxPlayer);
-                        foreach (var move in moveList)
-                        {
-                            var _MaxPoints = gameTree[i].MaxPoints;
-                            var _symbol = gameTree[i].maze.GetSymbol(move);
-                            if (_symbol.Equals(Symbols._PILL))
-                                _MaxPoints++;
-                            else if (_symbol.Equals(Symbols._BONUS_PILL))
-                                _MaxPoints += 10;
-                            var gameBoard = new GameBoard
-                            {
-                                maze = new Maze(gameTree[i].maze),
-                                MaxPlayer = move,
-                                MinPlayer = gameTree[i].MinPlayer,
-                                MaxPoints = _MaxPoints,
-                                MinPoints = gameTree[i].MinPoints,
-                                PrecedingBoard = gameTree[i]
-                            };
-                            gameBoard.MakeMove(move, gameTree[i].MaxPlayer, Symbols._PLAYER_A);
-                            gameTree.Add(gameBoard);
-                            gameTree[i].Childs.Add(gameBoard);
-                        }
-                    }
-                }
-
-                //MIN
-                if (!isTerminalState(gameTree))
-                {
-                    var MinCount = gameTree.Count;
-                    for (var i = 0; i < MinCount; i++)
-                    {
-                        if (gameTree[i].isLastLevel)
-                        {
-                            gameTree[i].isLastLevel = false;
-                            var moveList = GenerateMoves(gameTree[i].maze, gameTree[i].MinPlayer);
-                            foreach (var move in moveList)
-                            {
-                                var _MinPoints = gameTree[i].MinPoints;
-                                var _symbol = gameTree[i].maze.GetSymbol(move);
-                                if (_symbol.Equals(Symbols._PILL))
-                                    _MinPoints++;
-                                else if (_symbol.Equals(Symbols._BONUS_PILL))
-                                    _MinPoints += 10;
-                                var gameBoard = new GameBoard
-                                {
-                                    maze = new Maze(gameTree[i].maze),
-                                    MaxPlayer = gameTree[i].MaxPlayer,
-                                    MinPlayer = move,
-                                    MaxPoints = gameTree[i].MaxPoints,
-                                    MinPoints = _MinPoints,
-                                    PrecedingBoard = gameTree[i]
-                                };
-                                gameBoard.MakeMove(move, gameTree[i].MinPlayer, Symbols._PLAYER_B);
-                                gameTree.Add(gameBoard);
-                                gameTree[i].Childs.Add(gameBoard);
-                            }
-                        }
-                    }
-                }
-                depth++;
-            }
-
-            EvalGameSTate(gameTree);
-
-            //var _bestMoveUtility = AlphaBeta(gameTree[0], 100,double.NegativeInfinity,double.PositiveInfinity, true);
-            var _bestMoveUtility = MinMax(gameTree[0], 100, true);
-            foreach (var child in gameTree[0].Childs)
-            {
-                if (child.Utility.Equals(_bestMoveUtility))
-                    _nextMove = child.MaxPlayer;
-            }
-            return _nextMove;
-        }
-
-
-        private static double MinMax(GameBoard gameBoard, int depth, bool MaxPlayer)
-        {
-            if (depth == 0 || gameBoard.isLastLevel)
-                return gameBoard.Utility;
-
-            if (MaxPlayer)
-            {
-                var v = double.NegativeInfinity;
-                foreach (var child in gameBoard.Childs)
-                {
-                    var val = MinMax(child, depth - 1, false);
-                    v = Max(v, val);
-                    child.PrecedingBoard.Utility = v;
-                }
-
-                return v;
-            }
-            else
-            {
-                var v = double.PositiveInfinity;
-                foreach (var child in gameBoard.Childs)
-                {
-                    var val = MinMax(child, depth - 1, true);
-                    v = Min(v, val);
-                    child.PrecedingBoard.Utility = v;
-                }
-                return v;
-            }
-        }
-
-        private static double AlphaBeta(GameBoard gameBoard, int depth, double a, double b, bool MaxPlayer)
-        {
-            var bestChild = new GameBoard();
-            if (depth == 0 || gameBoard.isLastLevel)
-                return gameBoard.Utility;
-
-            if (MaxPlayer)
-            {
-                foreach (var child in gameBoard.Childs)
-                {
-                    a = Max(a, AlphaBeta(child, depth - 1, a, b, false));
-                    bestChild = child;
-                    if (b <= a)
-                        break;
-
-                }
-                bestChild.isBestMove = true;
-                return a;
-            }
-            else
-            {
-                foreach (var child in gameBoard.Childs)
-                {
-                    b = Min(b, AlphaBeta(child, depth - 1, a, b, true));
-                    child.Utility = b;
-                    if (b <= a)
-                        break;
-                }
-                return b;
-            }
-        }
-
-        private static double Max(double x, double y)
-        {
-            return x > y ? x : y;
-        }
-        private static double Min(double x, double y)
-        {
-            return x < y ? x : y;
-        }
-
-        private static bool isTerminalState(List<GameBoard> gameTree)
-        {
-            foreach (var board in gameTree)
-            {
-                if (board.isLastLevel)
-                {
-                    if (!board.isTerminal())
-                        return false;
-                }
-
-            }
-            return true;
-        }
-
-        private static void EvalGameSTate(List<GameBoard> gameTree)
-        {
-            //var _gameTree = new List<GameBoard>();
-            for (var i = 0; i < gameTree.Count; i++)
-            {
-                if (gameTree[i].isLastLevel)
-                {
-                    var _utility = gameTree[i].MaxPoints - gameTree[i].MinPoints;
-                    gameTree[i].Utility = _utility;
-                    //_gameTree.Add(board);
-                }
-            }
-            //return _gameTree;
-        }*/
-
     }
 }
