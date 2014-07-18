@@ -18,34 +18,34 @@ namespace pacmanduelbot.brainbox
             if (!_PLAYER_A_POSITION.IsEmpty)
             {
                 ScoreCard.UpdateScore(_maze, false);
-                var _next_position = DetermineNextPosition();
-
+                var _nextMove = DetermineNextMove();
+                
                 if (PoisonBucket.IsSelfRespawnNeeded())
-                    return MakeMoveAndRespawn(_next_position);
+                    return MakeMoveAndRespawn(_nextMove);
 
                 if (_KILL_PLAYER_B)
-                    return MakeMoveAndKillPlayerB(_next_position);
+                    return MakeMoveAndKillPlayerB(_nextMove);
 
                 if (_DROP_POISON_PILL)
-                    return MakeMoveAndDropPoisonPill(_next_position);
+                    return MakeMoveAndDropPoisonPill(_nextMove);
 
                 _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
-                _maze.SetSymbol(_next_position, Symbols._PLAYER_A);
+                _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
                 ScoreCard.UpdateScore(_maze, true);
             }
             return _maze;
         }
 
-        private Maze MakeMoveAndDropPoisonPill(Point _move)
+        private Maze MakeMoveAndDropPoisonPill(Point _nextMove)
         {
             PoisonBucket.DropPoisonPill();
             _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._POISON_PILL);
-            _maze.SetSymbol(_move, Symbols._PLAYER_A);
+            _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
             ScoreCard.UpdateScore(_maze, true);
             return _maze;
         }
 
-        private Maze MakeMoveAndRespawn(Point _move)
+        private Maze MakeMoveAndRespawn(Point _nextMove)
         {
             var _pointlist = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
             foreach (var _point in _pointlist)
@@ -63,9 +63,9 @@ namespace pacmanduelbot.brainbox
             var _poisonPill = FindNearbyPoisonPill();
             if (!_poisonPill.IsEmpty)
             {
-                var _nextMove = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _poisonPill);
+                var _move = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _poisonPill);
                 _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
-                _maze.SetSymbol(_nextMove[1], Symbols._PLAYER_A);
+                _maze.SetSymbol(_move[1], Symbols._PLAYER_A);
                 ScoreCard.UpdateScore(_maze, true);
                 return _maze;
             }
@@ -73,12 +73,12 @@ namespace pacmanduelbot.brainbox
             //tough luck
             PoisonBucket.EmptyPoisonBucket();
             _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
-            _maze.SetSymbol(_move, Symbols._PLAYER_A);
+            _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
             ScoreCard.UpdateScore(_maze, true);
             return _maze;
         }
 
-        private Maze MakeMoveAndKillPlayerB(Point _move)
+        private Maze MakeMoveAndKillPlayerB(Point _nextMove)
         {
             var _TurnsWithNoPointScored = ScoreCard.GetTurnsWithNoPointScored();//adjust for when a pill is far
             var _playerAScore = ScoreCard.GetPlayerAScore();
@@ -101,12 +101,12 @@ namespace pacmanduelbot.brainbox
             }
 
             _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
-            _maze.SetSymbol(_move, Symbols._PLAYER_A);
+            _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
             ScoreCard.UpdateScore(_maze, true);
             return _maze;
         }
 
-        private Point DetermineNextPosition()
+        private Point DetermineNextMove()
         {
             var _move = new List<Point>();
             var _next = FindNearbyPill();
