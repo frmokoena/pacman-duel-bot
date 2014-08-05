@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace pacmanduelbot.helpers
 {
-    class Moves
+    class MovesGenerator
     {
         public static List<Point> FindPathToPill(Maze _maze, Point _start, Point _destination)
         {

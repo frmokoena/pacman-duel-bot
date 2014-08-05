@@ -17,7 +17,7 @@ namespace pacmanduelbot.brainbox
         {
             if (!_PLAYER_A_POSITION.IsEmpty)
             {
-                ScoreCard.UpdateScore(_maze, false);
+                ScoreKeeper.UpdateScore(_maze, false);
                 var _nextMove = DetermineNextMove();
                 
                 if (PoisonBucket.IsSelfRespawnNeeded())
@@ -31,7 +31,7 @@ namespace pacmanduelbot.brainbox
 
                 _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
                 _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
-                ScoreCard.UpdateScore(_maze, true);
+                ScoreKeeper.UpdateScore(_maze, true);
             }
             return _maze;
         }
@@ -41,13 +41,13 @@ namespace pacmanduelbot.brainbox
             PoisonBucket.DropPoisonPill();
             _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._POISON_PILL);
             _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
-            ScoreCard.UpdateScore(_maze, true);
+            ScoreKeeper.UpdateScore(_maze, true);
             return _maze;
         }
 
         private Maze MakeMoveAndRespawn(Point _nextMove)
         {
-            var _pointlist = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
+            var _pointlist = MovesGenerator.GenerateMoves(_maze, _PLAYER_A_POSITION);
             foreach (var _point in _pointlist)
             {
                 if (_maze.GetSymbol(_point).Equals(Symbols._POISON_PILL))
@@ -55,7 +55,7 @@ namespace pacmanduelbot.brainbox
                     PoisonBucket.EmptyPoisonBucket();
                     _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
                     _maze.SetSymbol(_point, Symbols._PLAYER_A);
-                    ScoreCard.UpdateScore(_maze, true);
+                    ScoreKeeper.UpdateScore(_maze, true);
                     return _maze;
                 }
             }
@@ -63,10 +63,10 @@ namespace pacmanduelbot.brainbox
             var _poisonPill = FindNearbyPoisonPill();
             if (!_poisonPill.IsEmpty)
             {
-                var _move = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _poisonPill);
+                var _move = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, _poisonPill);
                 _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
                 _maze.SetSymbol(_move[1], Symbols._PLAYER_A);
-                ScoreCard.UpdateScore(_maze, true);
+                ScoreKeeper.UpdateScore(_maze, true);
                 return _maze;
             }
 
@@ -74,17 +74,17 @@ namespace pacmanduelbot.brainbox
             PoisonBucket.EmptyPoisonBucket();
             _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
             _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
-            ScoreCard.UpdateScore(_maze, true);
+            ScoreKeeper.UpdateScore(_maze, true);
             return _maze;
         }
 
         private Maze MakeMoveAndKillPlayerB(Point _nextMove)
         {
-            var _TurnsWithNoPointScored = ScoreCard.GetTurnsWithNoPointScored();//adjust for when a pill is far
-            var _playerAScore = ScoreCard.GetPlayerAScore();
-            var _playerBScore = ScoreCard.GetPlayerBScore();
+            var _TurnsWithNoPointScored = ScoreKeeper.GetTurnsWithNoPointScored();//adjust for when a pill is far
+            var _playerAScore = ScoreKeeper.GetPlayerAScore();
+            var _playerBScore = ScoreKeeper.GetPlayerBScore();
 
-            var moveList = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
+            var moveList = MovesGenerator.GenerateMoves(_maze, _PLAYER_A_POSITION);
             if (_playerAScore > _playerBScore
                 || _TurnsWithNoPointScored < Properties.Settings.Default._MaxTurnsWithNoPointsScored / 4)
             {
@@ -94,7 +94,7 @@ namespace pacmanduelbot.brainbox
                     {
                         _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
                         _maze.SetSymbol(_point, Symbols._PLAYER_A);
-                        ScoreCard.UpdateScore(_maze, true);
+                        ScoreKeeper.UpdateScore(_maze, true);
                         return _maze;
                     }
                 }
@@ -102,7 +102,7 @@ namespace pacmanduelbot.brainbox
 
             _maze.SetSymbol(_PLAYER_A_POSITION, Symbols._EMPTY);
             _maze.SetSymbol(_nextMove, Symbols._PLAYER_A);
-            ScoreCard.UpdateScore(_maze, true);
+            ScoreKeeper.UpdateScore(_maze, true);
             return _maze;
         }
 
@@ -113,11 +113,11 @@ namespace pacmanduelbot.brainbox
 
             if (_maze.GetSymbol(_next).Equals(Symbols._BONUS_PILL))
             {
-                _move = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
+                _move = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
                 return _move[1];
             }
 
-            var possibleMoveList = Moves.GenerateMoves(_maze, _PLAYER_A_POSITION);
+            var possibleMoveList = MovesGenerator.GenerateMoves(_maze, _PLAYER_A_POSITION);
             var list = new List<Point>();
             foreach (var _point in possibleMoveList)
             {
@@ -131,15 +131,15 @@ namespace pacmanduelbot.brainbox
             switch (list.Count)
             {
                 case 0:
-                    _move = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
+                    _move = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, _next);
                     if (!PoisonBucket.IsPoisonBucketEmpty()
                         && !(_PLAYER_A_POSITION.X == Properties.Settings.Default._MazeRespawnX && _PLAYER_A_POSITION.Y == Properties.Settings.Default._MazeRespawnY)
                         && !(_PLAYER_A_POSITION.X == Properties.Settings.Default._MazeRespawnExitUpX && _PLAYER_A_POSITION.Y == Properties.Settings.Default._MazeRespawnExitUpY)
                         && !(_PLAYER_A_POSITION.X == Properties.Settings.Default._MazeRespawnExitDownX && _PLAYER_A_POSITION.Y == Properties.Settings.Default._MazeRespawnExitDownY))
                     {
                         var _gd = _move[0].X;
-                        var _temp = Moves.FindPathToPill(_maze, new Point { X = Properties.Settings.Default._MazeRespawnX, Y = Properties.Settings.Default._MazeRespawnY }, _next);
-                        var _gr = _temp[0].X + 5;
+                        var _temp = MovesGenerator.FindPathToPill(_maze, new Point { X = Properties.Settings.Default._MazeRespawnX, Y = Properties.Settings.Default._MazeRespawnY }, _next);
+                        var _gr = _temp[0].X + 1;
 
                         if (_gr < _gd)
                             _DROP_POISON_PILL = true;
@@ -148,7 +148,7 @@ namespace pacmanduelbot.brainbox
                 case 1:
                     return list[0];
                 default:
-                    return Moves.PathSelect(_maze, _PLAYER_A_POSITION, 1000);
+                    return MovesGenerator.PathSelect(_maze, _PLAYER_A_POSITION, 1000);
             }
         }
 
@@ -171,7 +171,7 @@ namespace pacmanduelbot.brainbox
                         var _symbol = _maze.GetSymbol(x, y);
                         if (_symbol.Equals(Symbols._BONUS_PILL))
                         {
-                            var _costToBonus = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, new Point { X = x, Y = y });
+                            var _costToBonus = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, new Point { X = x, Y = y });
                             if (_costToBonus[0].X < 10)
                                 return new Point { X = x, Y = y };
                         }
@@ -183,9 +183,9 @@ namespace pacmanduelbot.brainbox
             int _playerAcost = 0, _playerBcost = 0;
             Point _playerBtarget;
             if ((_PLAYER_A_POSITION.X > Properties.Settings.Default._MazeTunnel
-                && ScoreCard.GetPlayerAScore() + _UPPER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore)
+                && ScoreKeeper.GetPlayerAScore() + _UPPER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore)
                 || (_PLAYER_B_POSITION.X > Properties.Settings.Default._MazeTunnel
-                && ScoreCard.GetPlayerBScore() + _UPPER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
+                && ScoreKeeper.GetPlayerBScore() + _UPPER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
             {
                 //TODO: Stay up there
                 _KILL_PLAYER_B = true;
@@ -193,7 +193,7 @@ namespace pacmanduelbot.brainbox
                 while (_open.Count != 0)
                 {
                     _closed.Add(_open[0]);
-                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
+                    var _templist = MovesGenerator.GenerateMoves(_maze, _open[0]);
                     foreach (var _point in _templist)
                     {
                         if (_point.X > Properties.Settings.Default._MazeTunnel)
@@ -205,16 +205,16 @@ namespace pacmanduelbot.brainbox
                                     //TODO:                        
                                     if (!_PLAYER_B_POSITION.IsEmpty)
                                     {
-                                        _playerAcost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
+                                        _playerAcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
                                         if (_playerBtarget.IsEmpty)
                                         {
                                             _playerBtarget = _point;
-                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
+                                            _playerBcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
                                         }
                                         else
                                         {
-                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
-                                            + Moves.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
+                                            _playerBcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
+                                            + MovesGenerator.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
                                         }
                                         if (_playerAcost <= _playerBcost)
                                             return _point;
@@ -238,9 +238,9 @@ namespace pacmanduelbot.brainbox
             }
 
             if ((_PLAYER_A_POSITION.X <= Properties.Settings.Default._MazeTunnel
-                && ScoreCard.GetPlayerAScore() + _LOWER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore)
+                && ScoreKeeper.GetPlayerAScore() + _LOWER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore)
                 || (_PLAYER_B_POSITION.X <= Properties.Settings.Default._MazeTunnel
-                && ScoreCard.GetPlayerBScore() + _LOWER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
+                && ScoreKeeper.GetPlayerBScore() + _LOWER_PILL_COUNT_TO_SCORE > Properties.Settings.Default._MazeDrawScore))
             {
                 //TODO: Stay down there
                 _KILL_PLAYER_B = true;
@@ -248,7 +248,7 @@ namespace pacmanduelbot.brainbox
                 while (_open.Count != 0)
                 {
                     _closed.Add(_open[0]);
-                    var _templist = Moves.GenerateMoves(_maze, _open[0]);
+                    var _templist = MovesGenerator.GenerateMoves(_maze, _open[0]);
                     foreach (var _point in _templist)
                     {
                         if (_point.X <= Properties.Settings.Default._MazeTunnel)
@@ -260,16 +260,16 @@ namespace pacmanduelbot.brainbox
                                     //TODO:                        
                                     if (!_PLAYER_B_POSITION.IsEmpty)
                                     {
-                                        _playerAcost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
+                                        _playerAcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
                                         if (_playerBtarget.IsEmpty)
                                         {
                                             _playerBtarget = _point;
-                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
+                                            _playerBcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
                                         }
                                         else
                                         {
-                                            _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
-                                            + Moves.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
+                                            _playerBcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
+                                            + MovesGenerator.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
                                         }
                                         if (_playerAcost <= _playerBcost)
                                             return _point;
@@ -296,7 +296,7 @@ namespace pacmanduelbot.brainbox
             while (_open.Count != 0)
             {
                 _closed.Add(_open[0]);
-                var _templist = Moves.GenerateMoves(_maze, _open[0]);
+                var _templist = MovesGenerator.GenerateMoves(_maze, _open[0]);
                 foreach (var _point in _templist)
                 {
                     if (!_explored.Contains(_point))
@@ -306,16 +306,16 @@ namespace pacmanduelbot.brainbox
                             //TODO:                        
                             if (!_PLAYER_B_POSITION.IsEmpty)
                             {
-                                _playerAcost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
+                                _playerAcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
                                 if (_playerBtarget.IsEmpty)
                                 {
                                     _playerBtarget = _point;
-                                    _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
+                                    _playerBcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_B_POSITION, _point)[0].X;
                                 }
                                 else
                                 {
-                                    _playerBcost = Moves.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
-                                    + Moves.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
+                                    _playerBcost = MovesGenerator.FindPathToPill(_maze, _PLAYER_B_POSITION, _playerBtarget)[0].X
+                                    + MovesGenerator.FindPathToPill(_maze, _playerBtarget, _point)[0].X;
                                 }
                                 if (_playerAcost <= _playerBcost)
                                     return _point;
@@ -340,7 +340,7 @@ namespace pacmanduelbot.brainbox
             while (_open.Count != 0)
             {
                 _closed.Add(_open[0]);
-                var _templist = Moves.GenerateMoves(_maze, _open[0]);
+                var _templist = MovesGenerator.GenerateMoves(_maze, _open[0]);
                 foreach (var _point in _templist)
                 {
                     if (!_explored.Contains(_point))
@@ -377,14 +377,14 @@ namespace pacmanduelbot.brainbox
             while (_open.Count != 0)
             {
                 _closed.Add(_open[0]);
-                var _templist = Moves.GenerateMoves(_maze, _open[0]);
+                var _templist = MovesGenerator.GenerateMoves(_maze, _open[0]);
                 foreach (var _point in _templist)
                 {
                     if (!_explored.Contains(_point))
                     {
                         if (_maze.GetSymbol(_point).Equals(Symbols._POISON_PILL))
                         {
-                            var _cost = Moves.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
+                            var _cost = MovesGenerator.FindPathToPill(_maze, _PLAYER_A_POSITION, _point)[0].X;
                             if (_cost < 4)
                                 return _point;
                             else

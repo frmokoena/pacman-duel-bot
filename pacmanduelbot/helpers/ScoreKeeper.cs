@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace pacmanduelbot.helpers
 {
-    class ScoreCard
+    class ScoreKeeper
     {
         public static readonly string _pathToScoreCard = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
             + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
