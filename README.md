@@ -7,9 +7,7 @@ My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2104 
 ## Rules
 1. Develop an artificially intelligent bot that is able to navigate the pacman maze and collect more pills than an opponent.
 
-## PROJECT STRUCTURE AND SOLUTION STRATEGY
-
-### STRATEGY IN SHORT:
+## Solution Strategy
 
 In this solution, I use A* for path finding: http://en.wikipedia.org/wiki/A*_search_algorithm.
 
@@ -32,63 +30,8 @@ i) The longest path may not be best way to go at all times. The reason being tha
 ii) One other tricky scenario :- taking the decision to head to one of those nearby pills, 1 pill may take you near more pills, while other may take you away.
     
 
-### PROJECT STRUCTURE
 
-####brainbox
-
-Bot
-----
-where the game decsions are made :- where to move, the next point/pill to head to, when to drop poison pill, when to respawn, when to kill an opponent.
-
-
-/helpers/
-=================================================================
-
-MovesGenerator
-------
-i)   Compute list of next available/valid positions to move to.
-ii)  Implement A* for path finding.
-iii) Build path for collecting points where we have more than one path to collect path. We normally prefer longest path of points.
- 
-ScoreKeeper
-----------
-i)  Keep track of scores for both players - me & opponent.
-ii) Also keeps track of TurnsWithNoPointScored.
-
-
-/models/
-=================================================================
-
-Maze
------
-keep the game maze.
-
-
-PathFinderNode
----------------
-Define the path node used in path finding.
-
-
-PoisonBucket
--------------
-Handles all things poison pill.
-
-
-/shared/
-=================================================================
-
-Symbols
---------
-Define game symbols.
-
-
-/store/
-=================================================================
-
-Stores game related files - Score card, Poison pill status file, etc.
-
-
-2. BUIDLING THE SOLUTION
+## Building the solution
 
 a) First, ensure that MSBuild is installed on your system, and the path to MSbuild is set in Environment Variables.
 
@@ -97,7 +40,7 @@ b) Double click the "compile.bat", and the project will build and produce an exe
 or simply build the solution through visual studio 2013.
 
 
-3. RUNNING THE SOLUTION
+## Running the solution
 
  Run the solution by running the test harness provided at https://github.com/EntelectChallenge/2014-PacMan-TestHarness or https://github.com/rm2k/2014-PacMan-TestHarness.
 
