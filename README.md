@@ -43,10 +43,10 @@ or simply build the solution through visual studio 2013.
 
 # Running the application
 
- Run the solution by running the test harness provided [here](https://github.com/EntelectChallenge/2014-PacMan-TestHarness) or [here](https://github.com/rm2k/2014-PacMan-TestHarness)
+ Run the solution by building and running the test harness provided [here](https://github.com/rm2k/2014-PacMan-TestHarness)
 
 You'll need to provide 2 arguments, botA and botB to the test harness, i.e.
 
-PacManDuel.exe C:\pacman\botA start.bat C:\pacman\botB start.bat, where this solution can be either botA or botB. 
+PacManDuel.exe C:\pacman\botA start.bat C:\pacman\botB start.bat, where this solution can be either botA or botB. Or just create two folders for the this very same bot and watch fighting agaist itself.
 
 ENJOY!	
