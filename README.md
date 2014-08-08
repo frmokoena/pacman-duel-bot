@@ -22,15 +22,11 @@ A list of rulles can be found here [here](http://challenge.entelect.co.za/Displa
    1. If we are in the lower part and we can win, we stay there. The same happens for the upper part.
    2. If opponent is in the lower part, and she can win, the strategy is to go there and disturb her. The same happnens for the upper part.
 
-All above happen while we search the neighbourhood for bonus pill.
+4. All above happen while we search the neighbourhood for bonus pill.
 
-Some shortcomings encountered,
-i. hhh
-ii.. 
-
-i) The longest path may not be best way to go at all times. The reason being that, the shorter path may end near more populated region. Tried to think how can I overcome this, but scratched my head way to much.
-
-ii) One other tricky scenario :- taking the decision to head to one of those nearby pills, 1 pill may take you near more pills, while other may take you away.
+## Some shortcomings encountered
+1. The longest path may not be best way to go at all times. The reason being that, the shorter path may end near more populated region.
+2. One other tricky scenario :- taking the decision to head to one of those nearby pills, 1 pill may take you near more pills, while other may take you away.
 
 # Tools used
 
@@ -38,16 +34,16 @@ Visual Studio 2013
 
 ## Building the solution
 
-a) First, ensure that MSBuild is installed on your system, and the path to MSbuild is set in Environment Variables.
+1. First, ensure that MSBuild is installed on your system, and the path to MSbuild is set in Environment Variables.
 
-b) Double click the "compile.bat", and the project will build and produce an executable in "E:\on cloud\Projects\VS\r2k14pacmanduelbot\pacmanduelbot\bin\Release"
+2. Double click the "compile.bat", and the project will build and produce an executable in "E:\on cloud\Projects\VS\r2k14pacmanduelbot\pacmanduelbot\bin\Release"
 
 or simply build the solution through visual studio 2013.
 
 
 # Running the application
 
- Run the solution by running the test harness provided at https://github.com/EntelectChallenge/2014-PacMan-TestHarness or https://github.com/rm2k/2014-PacMan-TestHarness.
+ Run the solution by running the test harness provided [here](https://github.com/EntelectChallenge/2014-PacMan-TestHarness) or [here](https://github.com/rm2k/2014-PacMan-TestHarness)
 
 You'll need to provide 2 arguments, botA and botB to the test harness, i.e.
 
