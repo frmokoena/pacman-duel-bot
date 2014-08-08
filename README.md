@@ -13,7 +13,7 @@ full rule list can be found [here]: http://challenge.entelect.co.za/DisplayLink.
 
 ## Solution Strategy
 
-In this solution, I use [A*] for path finding (http://en.wikipedia.org/wiki/A*_search_algorithm)
+In this solution, I use [A*](http://en.wikipedia.org/wiki/A*_search_algorithm) for path finding 
 
 1. If we can score point in 1 move, score the point, and in the case where we have more than one path to collect points, we normally prefer the longest streak.
 
