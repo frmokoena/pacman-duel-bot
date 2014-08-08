@@ -32,10 +32,9 @@ i) The longest path may not be best way to go at all times. The reason being tha
 ii) One other tricky scenario :- taking the decision to head to one of those nearby pills, 1 pill may take you near more pills, while other may take you away.
     
 
-b) PROJECT STRUCTURE
+### PROJECT STRUCTURE
 
-/brainbox/
-=================================================================
+####brainbox
 
 Bot
 ----
