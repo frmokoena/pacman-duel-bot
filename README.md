@@ -7,7 +7,7 @@ My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2104 
 # Rules
 1. Develop an artificially intelligent bot that is able to navigate the pacman maze and collect more pills than an opponent.
 
-# PROJECT STRUCTURE AND SOLUTION STRATEGY
+## PROJECT STRUCTURE AND SOLUTION STRATEGY
 
 a) STRATEGY IN SHORT:
 
