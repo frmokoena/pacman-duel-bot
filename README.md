@@ -9,7 +9,7 @@ My entry to the 2104 Entelect Challenge.
 ## Rules
 1. Develop an artificially intelligent bot that is able to navigate the pacman maze and collect more pills than an opponent.
 
-full rule list can be found [here]: http://challenge.entelect.co.za/DisplayLink.aspx?group=Rules&name=N/A
+A list of rulles can be found here [here](http://challenge.entelect.co.za/DisplayLink.aspx?group=Rules&name=N/A)
 
 ## Solution Strategy
 
