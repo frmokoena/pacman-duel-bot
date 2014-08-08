@@ -32,7 +32,7 @@ Visual Studio 2013
 ## Building the solution
 
 1. First, ensure that MSBuild is installed on your system, and the path to MSbuild is set in Environment Variables.
-2. Double click the "compile.bat", and the project will build and produce an executable in "E:\on cloud\Projects\VS\r2k14pacmanduelbot\pacmanduelbot\bin\Release" or
+2. In the solution directory, run compile.bat in the command prompt, and the solution will build and produce an executable in "E:\on cloud\Projects\VS\r2k14pacmanduelbot\pacmanduelbot\bin\Release" or
 3. Simply build the solution through visual studio 2013.
 
 ## Running the application
