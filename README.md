@@ -13,11 +13,9 @@ My entry to the 2104 Entelect Challenge.
 
 In this solution, I use A* for path finding: http://en.wikipedia.org/wiki/A*_search_algorithm.
 
-Otherwise,
-If we can score point in 1 move, score the point, and in the case where we have more than one path to collect points, we normally prefer the longest path.
+1. If we can score point in 1 move, score the point, and in the case where we have more than one path to collect points, we normally prefer the longest streak.
 
-Again,
-We break the maze into 2 portions :- Lower part, lower than the respawn region, and upper part, above and including the respawn region. Then,
+2. We break the maze into 2 portions :- Lower part, lower than the respawn region, and upper part, above and including the respawn region. Then,
 
 i) If we are in the lower part and we can win, we stay there. The same happens for the upper part.
 
