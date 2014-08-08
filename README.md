@@ -14,6 +14,7 @@ My entry to the 2104 Entelect Challenge.
 In this solution, I use A* for path finding: http://en.wikipedia.org/wiki/A*_search_algorithm.
 
 Otherwise,
+
 If we can score point in 1 move, score the point, and in the case where we have more than one path to collect points, we normally prefer the longest path.
 
 Again,
