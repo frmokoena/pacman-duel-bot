@@ -1,5 +1,6 @@
-pacman duel bot
+Pacman Duel Bot
 ===============
+
 # Introduction
 
 My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2104 Entelect Challenge.</a>
