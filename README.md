@@ -40,7 +40,7 @@ b) Double click the "compile.bat", and the project will build and produce an exe
 or simply build the solution through visual studio 2013.
 
 
-## Running the solution
+# Running the application
 
  Run the solution by running the test harness provided at https://github.com/EntelectChallenge/2014-PacMan-TestHarness or https://github.com/rm2k/2014-PacMan-TestHarness.
 
