@@ -1,5 +1,6 @@
 pacman duel bot
 ===============
+# Introduction
 
 My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2104 Entelect Challenge.</a>
 
@@ -28,8 +29,10 @@ Some shortcomings encountered,
 i) The longest path may not be best way to go at all times. The reason being that, the shorter path may end near more populated region. Tried to think how can I overcome this, but scratched my head way to much.
 
 ii) One other tricky scenario :- taking the decision to head to one of those nearby pills, 1 pill may take you near more pills, while other may take you away.
-    
 
+# Tools used
+
+Visual Studio 2013
 
 ## Building the solution
 
