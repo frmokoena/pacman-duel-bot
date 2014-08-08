@@ -205,15 +205,6 @@ namespace pacmanduelbot.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2, 1")]
-        public global::System.Drawing.Point _MazeBonusPillA {
-            get {
-                return ((global::System.Drawing.Point)(this["_MazeBonusPillA"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("2, 17")]
         public global::System.Drawing.Point _MazeBonusPillB {
             get {
@@ -245,6 +236,42 @@ namespace pacmanduelbot.Properties {
         public int _MaxTurnsWithNoPointsScored {
             get {
                 return ((int)(this["_MaxTurnsWithNoPointsScored"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2, 1")]
+        public global::System.Drawing.Point _MazeBonusPillA {
+            get {
+                return ((global::System.Drawing.Point)(this["_MazeBonusPillA"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("poisonpillbucket.csv")]
+        public string _POISON_PILL_BUCKET {
+            get {
+                return ((string)(this["_POISON_PILL_BUCKET"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("scorecard.csv")]
+        public string _SCORE_CARD {
+            get {
+                return ((string)(this["_SCORE_CARD"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("gameupdate.state")]
+        public string _GAME_STATE_UPDATE {
+            get {
+                return ((string)(this["_GAME_STATE_UPDATE"]));
             }
         }
     }

@@ -10,20 +10,14 @@ namespace pacmanduelbot.helpers
 {
     class ScoreKeeper
     {
-        public static readonly string _pathToScoreCard = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
-            + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-            + "scorecard.csv";
-        public static readonly string _pathToGameState = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar
-            + "pacmanduelbot" + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar
-            + "game.state";
+        public static readonly string _pathToScoreCard = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._SCORE_CARD;
+        public static readonly string _pathToGameState = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._GAME_STATE_UPDATE;
 
         //public static readonly string _pathToScoreCard = ".." + System.IO.Path.DirectorySeparatorChar + ".."
-        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
-        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "scorecard.csv";
+        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._SCORE_CARD;
 
         //public static readonly string _pathToGameState = ".." + System.IO.Path.DirectorySeparatorChar + ".."
-        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "pacmanduelbot"
-        //    + System.IO.Path.DirectorySeparatorChar + "store" + System.IO.Path.DirectorySeparatorChar + "game.state";
+        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._GAME_STATE_UPDATE;
 
 
         public static void CleanScoreCard(Maze _maze)

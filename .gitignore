@@ -181,3 +181,5 @@ pacmanduelbot/store/poison_pill.csv
 pacmanduelbot/store/scorecard.csv
 pacmanduelbot/store/poisonpillbucket.csv
 gamestates.txt
+*.state
+*.csv
