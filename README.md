@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 pacman duel bot
 ===============
 
 My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2104 Entelect Challenge.</a>
 
+=======
+<h2>pacman duel bot</h2>
+<p>
+My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2014 Entelect Challenge.</a>
+</P>
+>>>>>>> 1b751e7e9aab72676df97756547ed9ae2bd16f72
 
 <h2>rules</h2>
 <ol>
