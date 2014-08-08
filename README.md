@@ -4,12 +4,12 @@ pacman duel bot
 My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2104 Entelect Challenge.</a>
 
 
-# Rules
+## Rules
 1. Develop an artificially intelligent bot that is able to navigate the pacman maze and collect more pills than an opponent.
 
 ## PROJECT STRUCTURE AND SOLUTION STRATEGY
 
-a) STRATEGY IN SHORT:
+### STRATEGY IN SHORT:
 
 In this solution, I use A* for path finding: http://en.wikipedia.org/wiki/A*_search_algorithm.
 
