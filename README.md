@@ -3,7 +3,7 @@ Pacman Duel Bot
 
 # Introduction
 
-My entry to the <a href="http://challenge.entelect.co.za/" target="_blank">2104 Entelect Challenge.</a>
+My entry to the 2104 Entelect Challenge.
 
 
 ## Rules
