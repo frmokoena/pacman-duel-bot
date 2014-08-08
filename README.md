@@ -26,6 +26,8 @@ ii) If opponent is in the lower part, and she can win, the strategy is to go the
 All above happen while we search the neighbourhood for bonus pill.
 
 Some shortcomings encountered,
+i. hhh
+ii.. 
 
 i) The longest path may not be best way to go at all times. The reason being that, the shorter path may end near more populated region. Tried to think how can I overcome this, but scratched my head way to much.
 
