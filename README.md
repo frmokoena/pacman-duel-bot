@@ -13,13 +13,14 @@ A list of rulles can be found here [here](http://challenge.entelect.co.za/Displa
 
 ## Solution Strategy
 
-In this solution, I use [A*](http://en.wikipedia.org/wiki/A*_search_algorithm) for path finding 
+1. In this solution, I use [A*](http://en.wikipedia.org/wiki/A*_search_algorithm) for path finding 
 
-1. If we can score point in 1 move, score the point, and in the case where we have more than one path to collect points, we normally prefer the longest streak.
+2. If we can score point in 1 move, score the point, and in the case where we have more than one path to collect points, we normally prefer the longest streak.
 
-2. We break the maze into 2 portions :- Lower part, lower than the respawn region, and upper part, above and including the respawn region. Then,
-1. If we are in the lower part and we can win, we stay there. The same happens for the upper part.
-2. If opponent is in the lower part, and she can win, the strategy is to go there and disturb her. The same happnens for the upper part.
+3. We break the maze into 2 portions :- Lower part, lower than the respawn region, and upper part, above and including the respawn region. Then,
+ 
+   1. If we are in the lower part and we can win, we stay there. The same happens for the upper part.
+   2. If opponent is in the lower part, and she can win, the strategy is to go there and disturb her. The same happnens for the upper part.
 
 All above happen while we search the neighbourhood for bonus pill.
 
