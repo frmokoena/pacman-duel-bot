@@ -13,13 +13,6 @@ namespace pacmanduelbot.helpers
         public static readonly string _pathToScoreCard = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._SCORE_CARD;
         public static readonly string _pathToGameState = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._GAME_STATE_UPDATE;
 
-        //public static readonly string _pathToScoreCard = ".." + System.IO.Path.DirectorySeparatorChar + ".."
-        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._SCORE_CARD;
-
-        //public static readonly string _pathToGameState = ".." + System.IO.Path.DirectorySeparatorChar + ".."
-        //    + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._GAME_STATE_UPDATE;
-
-
         public static void CleanScoreCard(Maze _maze)
         {
             string _input;
@@ -142,7 +135,7 @@ namespace pacmanduelbot.helpers
                 }
                 else
                 {
-                    _playerBScore = (_currentPillCountToScore == _previousPillCountToScore - 1) ? _playerBScore+=1 : _playerBScore+=10;
+                    _playerBScore = (_currentPillCountToScore == _previousPillCountToScore - 1) ? _playerBScore += 1 : _playerBScore += 10;
                 }
 
                 string _input = _playerAScore.ToString() + "," + _playerBScore.ToString() + "," + _TurnsWithNoPointScored.ToString();

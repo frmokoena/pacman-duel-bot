@@ -10,15 +10,12 @@ namespace pacmanduelbot
     {
         static void Main(string[] args)
         {
-            //string _filepath = @"..\..\..\game.state";
-            //var maze = new Maze(_filepath);
-
             var maze = new Maze(args[0]);
 
             if (IsTheGameStart(maze))
-            { 
-                PoisonBucket.FillUpPoisonBucket(); 
-                ScoreKeeper.CleanScoreCard(maze); 
+            {
+                PoisonBucket.FillUpPoisonBucket();
+                ScoreKeeper.CleanScoreCard(maze);
             }
 
             Bot _Bot = new Bot { _maze = maze };
@@ -42,10 +39,10 @@ namespace pacmanduelbot
                         _PILL_COUNT += 10;
                 }
             }
-            if(_PILL_COUNT == Properties.Settings.Default._MazeTotalPillCount
+            if (_PILL_COUNT == Properties.Settings.Default._MazeTotalPillCount
                 || _PILL_COUNT == Properties.Settings.Default._MazeTotalPillCount - 1)
                 return true;
-            return false;            
+            return false;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using pacmanduelbot.models;
+﻿using pacmanduelbot.brainbox;
+using pacmanduelbot.models;
 using pacmanduelbot.shared;
 using System;
 using System.Collections.Generic;
@@ -9,224 +10,44 @@ namespace pacmanduelbot.helpers
 {
     class MovesGenerator
     {
-        public static List<Point> FindPathToPill(Maze _maze, Point _start, Point _destination)
-        {
-            var _nextList = new List<Point>();
-            var _closedSet = new List<PathFinderNode>();
-            var _hScore = Math.Abs(_start.X - _destination.X) + Math.Abs(_start.Y - _destination.Y);
-            var _openSet = new List<PathFinderNode>
-            {
-                new PathFinderNode
-                {
-                    _position = _start,
-                    _g_score = 0,
-                    _h_score = _hScore,
-                    _f_score = _hScore
-                }
-            };
-
-            while (!(_openSet.Count == 0))
-            {
-                var _current = FindLowFScore(_openSet);
-                if (_current._position.Equals(_destination))
-                {
-                    //TODO:
-                    _nextList.Add(new Point { X = _current._g_score });
-                    _nextList.Add(ReconstructPath(_current, _closedSet)._position);
-                    return _nextList;
-                }
-                _openSet.Remove(_current);
-                _closedSet.Add(_current);
-
-                var _neighbor_nodes = GenerateMoves(_maze, _current._position);
-
-                foreach (var neighbor in _neighbor_nodes)
-                {
-                    var _tentative_gScore = _current._g_score + 1;
-                    _hScore = Math.Abs(neighbor.X - _destination.X) + Math.Abs(neighbor.Y - _destination.Y);
-                    var _neighbor_node = new PathFinderNode
-                    {
-                        _position = neighbor,
-                        _g_score = _tentative_gScore,
-                        _h_score = _hScore,
-                        _f_score = _tentative_gScore + _hScore,
-                        _parent = _current
-                    };
-                    if (_closedSet.Contains(_neighbor_node))
-                        continue;
-                    var _neighbor = FindNeighborInOpenSet(_openSet, neighbor);
-                    if (!(_neighbor == null)
-                        && _tentative_gScore < _neighbor._g_score)
-                    {
-                        _openSet.Remove(_neighbor);
-                        _openSet.Add(_neighbor_node);
-
-                    }
-                    else if (_neighbor == null)
-                    {
-                        _openSet.Add(_neighbor_node);
-                    }
-                }
-            }
-            return _nextList;
-        }
-
-        private static PathFinderNode ReconstructPath(PathFinderNode _current_node, List<PathFinderNode> _closedSet)
-        {
-            if (_current_node._parent == _closedSet[0])
-                return _current_node;
-            else
-                return ReconstructPath(_current_node._parent, _closedSet);
-        }
-
-        private static PathFinderNode FindNeighborInOpenSet(List<PathFinderNode> _openSet, Point neighbor)
-        {
-            foreach (var node in _openSet)
-            {
-                if (node._position == neighbor)
-                    return node;
-            }
-            return null;
-        }
-
-        private static PathFinderNode FindLowFScore(List<PathFinderNode> _openset)
-        {
-            return _openset.OrderBy(x => x._f_score).First();
-        }
-
-        public static Point PathSelect(Maze _maze, Point _current_position, int depth)
-        {
-            var _open = new List<PathFinderNode>
-            {
-                new PathFinderNode{_position = _current_position}
-            };
-            var _closed = new List<PathFinderNode>();
-            var _depth = 0;
-            while (_open.Count != 0 && _depth < depth)
-            {
-                var _open_root = _open[0];
-                _closed.Add(_open_root);
-                _open.Remove(_open_root);
-
-                var _neighbors = GenerateMoves(_maze, _open_root._position);
-
-                foreach (var _point in _neighbors)
-                {
-                    if (!isExplored(_open_root, _point))
-                    {
-                        var _case = _maze.GetSymbol(_point);
-                        switch (_case)
-                        {
-                            case '.':
-                                var _path_node = new PathFinderNode
-                                {
-                                    _position = _point,
-                                    _score = _open_root._score + 1,
-                                    _isLeaf = isLeaf(_maze,_open_root, _point),
-                                    _parent = _open_root
-                                };
-                                _open.Add(_path_node);
-                                break;
-                            case '*':
-                                _path_node = new PathFinderNode
-                                {
-                                    _position = _point,
-                                    _score = _open_root._score + 10,
-                                    _isLeaf = isLeaf(_maze, _open_root, _point),
-                                    _parent = _open_root
-                                };
-                                _open.Add(_path_node);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                _depth++;
-            }
-            
-            var curr = new PathFinderNode();
-            if(_open.Count != 0)
-            {
-                curr = _closed.OrderByDescending(x => x._score).First();
-                return ReconstructPath(curr, _closed)._position;
-            }
-
-            curr = _closed.OrderByDescending(x => x._score).First();
-
-            var _longestStreaks = _closed.Where(pathNode => pathNode._score == curr._score).ToList();
-            if(_longestStreaks.Count == 1)
-                return ReconstructPath(curr, _closed)._position;
-            var random = new Random();
-            var _longestPathIndex = random.Next(0, _longestStreaks.Count);
-            return ReconstructPath(_longestStreaks[_longestPathIndex], _closed)._position;            
-        }
-
-        private static bool isLeaf(Maze maze, PathFinderNode parent, Point point)
-        {
-            var _list = GenerateMoves(maze, point);
-            foreach (var _item in _list)
-            {
-                if(!isExplored(new PathFinderNode { _position = point, _parent = parent }, _item))
-                {
-                    var _symbol = maze.GetSymbol(_item);
-                    if (_symbol.Equals(Symbols._BONUS_PILL) || _symbol.Equals(Symbols._PILL))
-                        return false;
-                }              
-            }
-            return true;
-        }
-
-        static bool isExplored(PathFinderNode parent, Point point)
-        {
-            while (!(parent == null))
-            {
-                if (point == parent._position)
-                    return true;
-                parent = parent._parent;
-            }
-            return false;
-        }    
-
         public static List<Point> GenerateMoves(Maze maze, Point currentPoint)
         {
             var nextMoves = new List<Point>();
 
-            if (IsValidPoint(new Point { X = currentPoint.X, Y = currentPoint.Y + 1}))
+            if (IsValidPoint(new Point { X = currentPoint.X, Y = currentPoint.Y + 1 }))
             {
-                var point = new Point{X = currentPoint.X,Y=currentPoint.Y + 1};
+                var point = new Point { X = currentPoint.X, Y = currentPoint.Y + 1 };
                 if (!IsWall(maze, point) && !IsRespawnZoneRight(point))
                     nextMoves.Add(point);
             }
 
-            if (IsValidPoint(new Point { X = currentPoint.X, Y = currentPoint.Y - 1}))
+            if (IsValidPoint(new Point { X = currentPoint.X, Y = currentPoint.Y - 1 }))
             {
-                var point = new Point{X = currentPoint.X, Y = currentPoint.Y - 1};
+                var point = new Point { X = currentPoint.X, Y = currentPoint.Y - 1 };
                 if (!IsWall(maze, point) && !IsRespawnZoneLeft(point))
                     nextMoves.Add(point);
-
             }
 
-            if (IsValidPoint(new Point { X = currentPoint.X + 1, Y = currentPoint.Y}))
+            if (IsValidPoint(new Point { X = currentPoint.X + 1, Y = currentPoint.Y }))
             {
-                var point = new Point{X = currentPoint.X + 1, Y = currentPoint.Y};
-                if(!IsWall(maze, point) && !IsRespawnZoneExitUP(point) && !IsRespawnZone(point))
+                var point = new Point { X = currentPoint.X + 1, Y = currentPoint.Y };
+                if (!IsWall(maze, point) && !IsRespawnZoneExitUP(point) && !IsRespawnZone(point))
                 {
                     if (!(IsRespawnZone(currentPoint) && maze.GetSymbol(currentPoint.X + 1, currentPoint.Y).Equals(Symbols._PLAYER_B)))
                         nextMoves.Add(new Point { X = currentPoint.X + 1, Y = currentPoint.Y });
                 }
             }
-            
-            if (IsValidPoint(new Point { X = currentPoint.X - 1, Y = currentPoint.Y}))
+
+            if (IsValidPoint(new Point { X = currentPoint.X - 1, Y = currentPoint.Y }))
             {
                 var point = new Point { X = currentPoint.X - 1, Y = currentPoint.Y };
                 if (!IsWall(maze, point) && !IsRespawnZoneExitDown(point) && !IsRespawnZone(point))
                 {
-                    if(!(IsRespawnZone(currentPoint) && maze.GetSymbol(currentPoint.X - 1, currentPoint.Y).Equals(Symbols._PLAYER_B)))
+                    if (!(IsRespawnZone(currentPoint) && maze.GetSymbol(currentPoint.X - 1, currentPoint.Y).Equals(Symbols._PLAYER_B)))
                         nextMoves.Add(new Point { X = currentPoint.X - 1, Y = currentPoint.Y });
                 }
             }
-            
+
             if (IsPortalLeft(currentPoint))
                 nextMoves.Add(new Point { X = Properties.Settings.Default._MazePortal2X, Y = Properties.Settings.Default._MazePortal2Y });
 
@@ -238,13 +59,13 @@ namespace pacmanduelbot.helpers
 
         static bool IsRespawnZone(Point p)
         {
-            return (p.X == Properties.Settings.Default._MazeRespawnX) 
-                && (p.Y == Properties.Settings.Default._MazeRespawnY); 
+            return (p.X == Properties.Settings.Default._MazeRespawnX)
+                && (p.Y == Properties.Settings.Default._MazeRespawnY);
         }
 
         static bool IsRespawnZoneExitUP(Point p)
         {
-            return (p.X == Properties.Settings.Default._MazeRespawnExitUpX) 
+            return (p.X == Properties.Settings.Default._MazeRespawnExitUpX)
                 && (p.Y == Properties.Settings.Default._MazeRespawnExitUpY);
         }
 
@@ -287,6 +108,168 @@ namespace pacmanduelbot.helpers
         {
             return (point.X == Properties.Settings.Default._MazePortal2X)
                 && (point.Y == Properties.Settings.Default._MazePortal2Y);
+        }
+
+        public static List<Point> PathToPill(Maze maze, Point start, Point destination)
+        {
+            var list = new List<Point>();
+            var closedSet = new List<PathNode>();
+            var hScore = Math.Abs(start.X - destination.X) + Math.Abs(start.Y - destination.Y);
+
+            var openSet = new List<PathNode>
+            {
+                new PathNode
+                {
+                    Position = start,
+                    GScore = 0,
+                    HScore = hScore,
+                    FScore = hScore
+                }
+
+            };
+
+            while (openSet.Count != 0)
+            {
+                var current = BestNode(openSet);
+                if (current.Position.Equals(destination))
+                {
+                    list.Add(new Point { X = current.GScore });
+                    list.Add(ReconstructPath(start, current).Position);
+                    return list;
+                }
+                openSet.Remove(current);
+                closedSet.Add(current);
+
+                var childpoints = GenerateMoves(maze, current.Position);
+
+                foreach (var childpoint in childpoints)
+                {
+                    var gScore = current.GScore + 1;
+                    hScore = Math.Abs(childpoint.X - destination.X) + Math.Abs(childpoint.Y - destination.Y);
+                    var newChild = new PathNode
+                    {
+                        Position = childpoint,
+                        GScore = gScore,
+                        HScore = hScore,
+                        FScore = gScore + hScore
+                    };
+
+
+                    if (closedSet.Contains(newChild))
+                        continue;
+                    var _newChild = FindChild(newChild, openSet);
+                    if (_newChild != null
+                        && gScore < _newChild.GScore)
+                    {
+                        openSet.Remove(_newChild);
+                        current.InsertChild(newChild);
+                        openSet.Add(newChild);
+                    }
+                    else if (_newChild == null)
+                    {
+                        current.InsertChild(newChild);
+                        openSet.Add(newChild);
+                    }
+                }
+            }
+            return list;
+        }
+
+        public static Point SelectPath(Maze maze, Point start, int depth)
+        {
+            var openSet = new List<PathNode>
+            {
+                new PathNode{Position = start}
+            };
+            var closedSet = new List<PathNode>();
+            var _depth = 0;
+
+            while (openSet.Count != 0 && _depth < depth)
+            {
+                var root = openSet.First();
+                openSet.Remove(root);
+
+                var childPoints = GenerateMoves(maze, root.Position);
+
+                foreach (var childPoint in childPoints)
+                {
+                    if (!isChildExplored(root, childPoint))
+                    {
+                        var _case = maze.GetSymbol(childPoint);
+                        switch (_case)
+                        {
+                            case '.':
+                                var newChild = new PathNode
+                                {
+                                    Position = childPoint,
+                                    Score = root.Score + 1
+                                };
+                                root.InsertChild(newChild);
+                                openSet.Add(newChild);
+                                break;
+                            case '*':
+                                newChild = new PathNode
+                                {
+                                    Position = childPoint,
+                                    Score = root.Score + 10
+                                };
+                                root.InsertChild(newChild);
+                                openSet.Add(newChild);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                closedSet.Add(root);
+                _depth++;
+            }
+
+            var current = new PathNode();
+            if (openSet.Count != 0)
+            {
+                current = closedSet.OrderByDescending(pathNode => pathNode.Score).First();
+                return ReconstructPath(start, current).Position;
+            }
+
+            current = closedSet.OrderByDescending(pathNode => pathNode.Score).First();
+            var longestStreaks = closedSet.Where(pathNode => pathNode.Score == current.Score).ToList();
+            if (longestStreaks.Count == 1)
+                return ReconstructPath(start, current).Position;
+            var random = new Random();
+            var longestStreakIndex = random.Next(0, longestStreaks.Count);
+            return ReconstructPath(start, longestStreaks[longestStreakIndex]).Position;
+        }
+
+        private static PathNode FindChild(PathNode newChild, List<PathNode> openSet)
+        {
+            foreach (var node in openSet)
+                if (node.Position == newChild.Position)
+                    return node;
+            return null;
+        }
+
+        private static PathNode ReconstructPath(Point start, PathNode current)
+        {
+            while (current.Parent.Position != start)
+                current = current.Parent;
+            return current;
+        }
+
+        private static PathNode BestNode(List<PathNode> openSet)
+        {
+            return openSet.OrderBy(x => x.FScore).First();
+        }
+
+        private static bool isChildExplored(PathNode root, Point childPoint)
+        {
+            while (root != null)
+            {
+                if (root.Position == childPoint)
+                    return true;
+                root = root.Parent;
+            }
+            return false;
         }
     }
 }

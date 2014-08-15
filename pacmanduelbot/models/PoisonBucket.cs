@@ -6,8 +6,7 @@ namespace pacmanduelbot.models
     class PoisonBucket
     {
         public static readonly string _poisonfilepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._POISON_PILL_BUCKET;
-        //public static readonly string _poisonfilepath = ".." + System.IO.Path.DirectorySeparatorChar + ".."
-        //   + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + Properties.Settings.Default._POISON_PILL_BUCKET;
+
         public static bool IsPoisonBucketEmpty()
         {
             int _NUMBER_OF_POISON_PILLS;
@@ -26,7 +25,7 @@ namespace pacmanduelbot.models
             {
                 Console.Write(e.ToString());
             }
-            bool parsed = Int32.TryParse(_CONTENTS[0], out _NUMBER_OF_POISON_PILLS);            
+            bool parsed = Int32.TryParse(_CONTENTS[0], out _NUMBER_OF_POISON_PILLS);
             return !parsed || _NUMBER_OF_POISON_PILLS < 1;
         }
 

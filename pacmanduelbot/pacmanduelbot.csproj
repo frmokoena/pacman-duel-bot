@@ -46,9 +46,8 @@
     <Compile Include="Exceptions\UnreadableMazeException.cs" />
     <Compile Include="helpers\MovesGenerator.cs" />
     <Compile Include="helpers\ScoreKeeper.cs" />
-    <Compile Include="models\GameBoard.cs" />
     <Compile Include="models\Maze.cs" />
-    <Compile Include="models\PathFinderNode.cs" />
+    <Compile Include="models\PathNode.cs" />
     <Compile Include="models\PoisonBucket.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
