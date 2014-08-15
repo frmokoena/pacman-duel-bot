@@ -20,11 +20,6 @@ My entry to the 2014 Entelect Challenge.
    2. If opponent is in the lower part, and she can win, the strategy is to go there and disturb her. The same happnens for the upper part.
 4. All above happen while we search the neighbourhood for bonus pill.
 
-## Some shortcomings
-
-1. The longest path may not be best way to go at all times. The reason being that, the shorter path may end near more populated region.
-2. One other tricky scenario :- taking the decision to head to one of those nearby pills, 1 pill may take you near more pills, while other may take you away.
-
 # Tools used
 
 Visual Studio 2013
