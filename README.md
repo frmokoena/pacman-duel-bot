@@ -54,7 +54,7 @@ __Rule #3:__ Can be found [here](http://challenge.entelect.co.za/DisplayLink.asp
 
 ## Solution strategy
 
-**_as a matter of fact:_** ~~Unless it's the lass pill standing, never ever waste time (and milk) going to a pill you are certain that your opponent will reach it before you.~~ Right?
+**_as a matter of fact:_** ~~Unless it's the lass pill standing, never ever waste time (and milk) going to a pill you are certain that your opponent will reach it before you.~~ Right? I hear you say NOOOOO!
 
 **_path finding:_** I use [A*](http://en.wikipedia.org/wiki/A*_search_algorithm).
 
