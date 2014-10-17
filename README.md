@@ -5,6 +5,14 @@ Entelect Challenge 2014: Pacman Duel Bot AI
 
 My entry to the 2014 Entelect Challenge.
 
+There were around 69 entries divided into 2 pools:
+
+1. Pool A (Advanced)
+
+2. Pool B (Beginner)
+
+This entry did qualify for Pool A, and was placed 4th out of 35 entries in Pool A.
+
 ## Rules
 
 __Rule #1:__ Develop an artificially intelligent bot that is able to navigate the following pacman maze and collect more pills than an opponent.
