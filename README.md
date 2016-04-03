@@ -48,9 +48,7 @@ Bonus Pill (*): Gain 10 points.
 Wall (#): Well, you can't go through the wall unless you are... Chuck Norris.
 ```
 
-__Rule #2:__ Can be found [here](http://challenge.entelect.co.za/DisplayLink.aspx?group=Rules&name=N/A)
-
-__Rule #3:__ Can be found [here](http://challenge.entelect.co.za/DisplayLink.aspx?group=Rules&name=N/A)
+__Rule #2:__ Can be found [here](http://challenge.entelect.co.za/challenge-history-2014)
 
 ## Solution strategy
 
